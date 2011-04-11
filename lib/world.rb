@@ -2,10 +2,10 @@ class World
   include HashInitializer
   attr_accessor :tick, :actors
   attr_reader :publish_context
-  default :publish_context { PublishContext.new }
-  default :map { Map.new }
-  delegates :pub, :spub, :events, :to => :publish_context
-  delegates Map, :to => :map
+  default(:publish_context) { PublishContext.new }
+  default(:map) { Map.new }
+  delegate :pub, :spub, :events, :to => :publish_context
+  delegate Map, :to => :map
   def run
     until round_over? do
       actors.each(&:tick)
@@ -55,7 +55,7 @@ end
 # gives instance access to world, via top level WorldInstance const, or a personal world
 module Worldly
   attr_reader :world
-  default :world { WorldInstance || World.new }
+  default(:world) { WorldInstance || World.new }
   include Publish::Publisher
   delegate :pub, :spub, :to => :world
 end

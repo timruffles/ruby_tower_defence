@@ -2,7 +2,7 @@ class Ability
   numeric_attr_accessor :delay, :energy, :last_activated_at
   attr_accessor :actor
   include HashInitializer
-  include Wordly
+  include Worldly
   def tick
     if world.tick >= last_activated_at + delay
       invoke
@@ -73,8 +73,7 @@ class Melee < Ability
 end
 class Movement < Ability
   numeric_attr_accessor :speed
-  default :position { Position.new(0,0) }
-  event :moved
+  default(:position) { Position.new(0,0) }
   def invoke
     actor.x -= speed
   end

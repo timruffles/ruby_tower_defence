@@ -4,9 +4,11 @@ end
 class Actor
   attr_accessor :name, :abilities
   numeric_attr_accessor :hps, :energy, :regenerate, :recharge
+  include Publish::Publisher
   evented_accessor :hps, :energy
   include Positioned
   include HashInitializer
+  include Worldly
   def tick_callbacks
     @tick_callbacks ||= methods.select {|method| /_on_tick$/ =~ method}
   end
@@ -36,7 +38,7 @@ end
 class Enemy < Actor
 end
 class Zombie < Enemy
-  default :abilities { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
+  default (:abilities) { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
   def current_ability
     abilities.random
   end
