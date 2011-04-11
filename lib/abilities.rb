@@ -2,7 +2,7 @@ class Ability
   numeric_attr_accessor :delay, :energy, :last_activated_at
   attr_accessor :actor
   include HashInitializer
-  include Worldly
+  delegate :world, :to => :actor
   def tick
     if world.tick >= last_activated_at + delay
       invoke
@@ -11,18 +11,28 @@ class Ability
   def invoke
   end
   def activated
-    last_activated_at = World.tick
+    last_activated_at = world.tick
   end
 end
 module OtherAffecting
-  def targets
-    World.actors_within_range(actor,range)
+  class << self
+    def self.affects classes
+      affects = []
+      classes.each do |who|
+        affects << case who
+                     when Class
+                       who
+                     when :foes
+                       actor.class.is_a?(Player) ? Enemy : Player
+                     when :friends
+                       actor.class
+                   end
+      end
+      default :affects, affects
+    end
   end
-end
-module EnemyAffecting
   def targets
-    # probably good to get some idea of teams in here etc
-    actor.is_a?(Enemy) ? World.players_within_range(actor,range) :  World.enemies_within_range(actor,range)
+    world.types_in_range(actor,affects)
   end
 end
 module AreaAffect
@@ -48,7 +58,7 @@ module Targetted
 end
 class Heal < Ability
   include AreaAffect
-  include OtherAffecting
+  affects :friends
   def affect beneficary
     beneficary.hps += 10
     pub(beneficary,10)
@@ -60,7 +70,7 @@ end
 class Melee < Ability
   numeric_attr_accessor :damage
   include AreaAffect
-  include EnemyAffecting
+  affects :foes
   def affect victim
     dmg = damage
     victim.hps -= dmg

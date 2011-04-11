@@ -14,11 +14,11 @@ class World
     end
     tick += 1
   end
-  def players
-    actors.select {|a| a.is_a?(Player) }
+  def types_in_range positioned, types, range
+    within_range(positioned,types(types),range) - [positioned]
   end
-  def enemies
-    actors.select {|a| a.is_a?(Enemy) }
+  def types types
+    actors.select {|a| types.include?(type) }
   end
   def tick
     @tick ||= 0
@@ -30,25 +30,6 @@ class World
     actors.inject({}) do |coords,actor|
       coords[[actor.x,actor.y]] = actor
       coords
-    end
-  end
-  def draw
-    actors_at_coords = actors_by_coords
-    (0..y_size).each do |row_i|
-      row = []
-      (0..x_size).each do |col_i|
-        at_coord = actors_at_coords[[col_i,row_i]]
-        output = case at_coord
-                   when nil
-                     ' '
-                   when Enemy
-                     'E'
-                   when Player
-                     'P'
-                 end
-        row << output
-      end
-      puts "|#{row.join(' ')}|\n"
     end
   end
 end

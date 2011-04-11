@@ -8,15 +8,6 @@ module Map
   def distance a, b
     Math.sqrt((a.x - b.x)**2 + (a.y - b.y)**2)
   end
-  def actors_within_range(positioned,range)
-    within_range(positioned,actors,range) - [positioned]
-  end
-  def enemies_within_range(positioned,range)
-    within_range(positioned,enemies,range) - [positioned]
-  end
-  def players_within_range(positioned,range)
-    within_range(positioned,enemies,range) - [positioned]
-  end
   def right
     x_size
   end
