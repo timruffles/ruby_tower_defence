@@ -52,7 +52,10 @@ class World
     end
   end
 end
+# gives instance access to world, via top level WorldInstance const, or a personal world
 module Worldly
   attr_reader :world
   default :world { WorldInstance || World.new }
+  include Publish::Publisher
+  delegate :pub, :spub, :to => :world
 end

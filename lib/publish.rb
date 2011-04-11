@@ -13,8 +13,12 @@ module Publish
     alias :spub :scoped_pub
   end
   module Publisher
-    delegate :pub, :spub, :to => World.publish_context
     class << self
+      def included(into)
+        into.send :extend, Macros
+      end
+    end
+    module Macros
       def evented_accessor *symbs
         symbs.each do |sym|
           mutator = "#{sym}="

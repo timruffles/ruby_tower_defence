@@ -11,7 +11,8 @@ describe "Delegation" do
       def inside
         @inside ||= Inside.new
       end
-      delegate :a, :b, :to => :inside
+      delegate :a, :to => :inside
+      delegate :b, :to => :inside
     end
     let(:instance) { Test.new }
 
@@ -33,7 +34,8 @@ describe "Delegation" do
       TestClassDelegate.send :delegate, Inside, :to => :inside
       TestClassDelegate.instance_methods.length.should == pre + 2
     end
-    it "delegates an array of methods" do
+    it "delegates all instance methods" do
+      TestClassDelegate.send :delegate, Inside, :to => :inside
       instance.a.should == 'a'
       instance.b.should == 'b'
     end

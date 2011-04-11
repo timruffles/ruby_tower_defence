@@ -1,5 +1,4 @@
 describe "A simple game" do
-
-  World = TowerDefence.new
+  world = World.new
 
 end
