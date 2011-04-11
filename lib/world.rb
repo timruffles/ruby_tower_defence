@@ -6,11 +6,13 @@ class World
   default(:map) { Map.new }
   delegate :pub, :spub, :events, :to => :publish_context
   delegate Map, :to => :map
+  class_attribute :tick_pause_secs
+  tick_pause_secs = 3
   def run
     until round_over? do
       actors.each(&:tick)
       draw
-      sleep 1
+      sleep tick_pause_secs if tick_pause_secs > 0
     end
     tick += 1
   end

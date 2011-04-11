@@ -1,6 +1,7 @@
 require 'bundler'
 Bundler.setup
 require 'active_support/core_ext/module'
+require 'active_support/core_ext/class'
 
 def lib_path path
   File.join(File.dirname(__FILE__),'..','lib',path)

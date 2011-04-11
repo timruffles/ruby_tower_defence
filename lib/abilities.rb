@@ -15,8 +15,8 @@ class Ability
   end
 end
 module OtherAffecting
-  class << self
-    def self.affects classes
+  module Macros
+    def affects classes
       affects = []
       classes.each do |who|
         affects << case who
@@ -31,11 +31,13 @@ module OtherAffecting
       default :affects, affects
     end
   end
+  macros Macros
   def targets
     world.types_in_range(actor,affects)
   end
 end
 module AreaAffect
+  include OtherAffecting
   attr_accessor :range
   def invoke
     in_range = targets
@@ -46,6 +48,7 @@ module AreaAffect
   end
 end
 module Targetted
+  include OtherAffecting
   attr_accessor :range, :target
   def invoke
     in_range = targets
