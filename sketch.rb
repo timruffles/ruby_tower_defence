@@ -6,7 +6,6 @@
 # allows for very simple display updates, with little logic. just listen and display events
 class Module
   def numeric_attr_accessor *symbs
-    b4 = instance_methods
     symbs.each do |sym|
       attr_writer sym
       define_method sym do
@@ -17,7 +16,6 @@ class Module
         instance_variable_get(iv)
       end
     end
-    puts (instance_methods - b4).inspect
   end
 end
 class Array
@@ -70,7 +68,6 @@ class TowerDefence
   attr_accessor :tick, :actors
   def run
     until round_over? do
-      puts actors.map(&:name).inspect
       actors.each(&:tick)
       draw
       sleep 1
