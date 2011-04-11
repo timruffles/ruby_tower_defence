@@ -1,6 +1,8 @@
-Dir.glob('core_ext/*.rb') {|f| require f }
-class Array
-  def random
-    self.send :[], rand * (length)
-  end
+module CoreExt; end
+pre = CoreExt.constants
+Dir.glob('core_ext/*.rb') do |f|
+  require f
+end
+(CoreExt.constants - pre).each do |constant|
+  CoreExt.const_get(constant).mixin_to.send :include, constant
 end
