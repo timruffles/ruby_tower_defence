@@ -1,0 +1,3 @@
+describe Pub do
+
+end
