@@ -4,7 +4,7 @@ module CoreExt::Delegate
   to_extend Module
   def delegate *args, opts
     if args.first.is_a?(Class)
-      delegate_class(mod,opts[:to])
+      delegate_class(args.first,opts[:to])
     else
       delegate_array(args,opts[:to])
     end
@@ -17,6 +17,6 @@ module CoreExt::Delegate
     end
   end
   def delegate_class klass, to
-    delegate_array klass.methods - Class.methods, to
+    delegate_array klass.instance_methods -  Object.instance_methods, to
   end
 end
