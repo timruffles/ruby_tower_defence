@@ -1,3 +1,9 @@
+# pub sub
+# verb subject object - a doing x to b
+#   - <Zombie>, <Player>, :melee
+# verb subject - a has changed by x, to z
+#   - <Player>, :hps, -2, 10
+# allows for very simple display updates, with little logic. just listen and display events
 class Module
   def numeric_attr_accessor *symbs
     b4 = instance_methods
@@ -14,6 +20,11 @@ class Module
     puts (instance_methods - b4).inspect
   end
 end
+class Array
+  def random
+    self.send :[], rand * (length)
+  end
+end
 module Map
   attr_accessor :x_size, :y_size
   def within_range(from,objects,range)
@@ -25,10 +36,13 @@ module Map
     Math.sqrt((a.x - b.x)**2 + (a.y - b.y)**2)
   end
   def actors_within_range(positioned,range)
-    within_range(positioned,actors,range)
+    within_range(positioned,actors,range) - [positioned]
   end
-  def enemies_within_range(range)
-    within_range(positioned,enemies,range)
+  def enemies_within_range(positioned,range)
+    within_range(positioned,enemies,range) - [positioned]
+  end
+  def players_within_range(positioned,range)
+    within_range(positioned,enemies,range) - [positioned]
   end
   def right
     x_size
@@ -56,6 +70,7 @@ class TowerDefence
   attr_accessor :tick, :actors
   def run
     until round_over? do
+      puts actors.map(&:name).inspect
       actors.each(&:tick)
       draw
       sleep 1
@@ -64,6 +79,9 @@ class TowerDefence
   end
   def players
     actors.select {|a| a.is_a?(Player) }
+  end
+  def enemies
+    actors.select {|a| a.is_a?(Enemy) }
   end
   def tick
     @tick ||= 0
@@ -94,9 +112,9 @@ class TowerDefence
                    when Player
                      'P'
                  end
-        row << " #{output} "
+        row << output
       end
-      puts "|#{row.join('')}|\n"
+      puts "|#{row.join(' ')}|\n"
     end
   end
 end
@@ -115,10 +133,21 @@ class Ability
     last_activated_at = World.tick
   end
 end
+module OtherAffecting
+  def targets
+    World.actors_within_range(actor,range)
+  end
+end
+module EnemyAffecting
+  def targets
+    # probably good to get some idea of teams in here etc
+    actor.is_a?(Enemy) ? World.players_within_range(actor,range) :  World.enemies_within_range(actor,range)
+  end
+end
 module AreaAffect
   attr_accessor :range
   def invoke
-    in_range = World.actors_within_range(actor,range)
+    in_range = targets
     activated unless in_range.empty?
     in_range.each do |actor|
       affect(actor)
@@ -128,7 +157,7 @@ end
 module Targetted
   attr_accessor :range, :target
   def invoke
-    in_range = World.enemies_within_range(actor,range)
+    in_range = targets
     return if in_range.empty?
     unless in_range.include?(target)
       target = in_range.first
@@ -138,16 +167,19 @@ module Targetted
 end
 class Heal < Ability
   include AreaAffect
+  include OtherAffecting
   def affect beneficary
     beneficary.hps += 10
+    pub(beneficary,10)
   end
-  def pub healed, dmg
-    World.pub("#{self} just healed #{victim} for #{dmg}")
+  def pub beneficary, dmg
+    World.pub("#{actor} just healed #{beneficary} for #{dmg}")
   end
 end
 class Melee < Ability
   numeric_attr_accessor :damage
   include AreaAffect
+  include EnemyAffecting
   def affect victim
     dmg = damage
     victim.hps -= dmg
@@ -159,16 +191,14 @@ class Melee < Ability
   def range; 1; end
 end
 class Movement < Ability
-  def initialize speed
-    speed = speed
-  end
+  numeric_attr_accessor :speed
   def invoke
-    last_x = x
-    x -= speed
-    pub last_x, y
+    last_x = actor.x
+    actor.x -= speed
+    pub last_x, actor.y
   end
   def pub last_x, last_y
-    World.pub("#{actor} moved from #{last_x}, #{last_y} to #{x}, #{y}")
+    World.pub("#{actor} moved from #{last_x}, #{last_y} to #{actor.x}, #{actor.y}")
   end
 end
 module Positioned
@@ -208,9 +238,14 @@ end
 class Enemy < Actor
 end
 class Zombie < Enemy
-  @@defaults = { :abilities => [Melee.new(:range => 1, :damage => 3),Movement.new(2)] }
   def self.spawn overrides = {}
-    Zombie.new @@defaults.merge(overrides)
+    Zombie.new defaults.merge(overrides)
+  end
+  def self.defaults
+    {:abilities => [Melee.new(:range => 1, :damage => 3),Movement.new(:speed => 1)]}
+  end
+  def current_ability
+    abilities.random
   end
 end
 
@@ -223,4 +258,3 @@ World.actors = [
   Zombie.spawn(:x => World.right, :y => 6, :name => 'Putrid Politican')
 ]
 World.run
-
