@@ -3,6 +3,7 @@ class Ability
   attr_accessor :actor
   include HashInitializer
   delegate :world, :to => :actor
+  delegate :pub, :spub, :to => :actor
   def tick
     if world.tick >= last_activated_at + delay
       invoke
@@ -54,25 +55,20 @@ class Targetted < OtherAffecting
   end
 end
 class Heal < AreaAffect
+  numeric_attr_accessor :healing
   default :affects, :friends
   def affect beneficary
-    beneficary.hps += 10
-    pub(beneficary,10)
-  end
-  def pub beneficary, dmg
-    World.pub("#{actor} just healed #{beneficary} for #{dmg}")
+    spub :heal, beneficary, healing, "#{actor} just healed #{beneficary} for #{healing}"
+    beneficary.hps += healing
   end
 end
 class Melee < AreaAffect
   numeric_attr_accessor :damage
   default :affects, :foes
   def affect victim
+    spub :melee, victim, damage, "#{actor} just struck #{victim} for #{damage}"
     dmg = damage
     victim.hps -= dmg
-    pub(victim,dmg)
-  end
-  def pub victim, dmg
-    World.pub("#{actor} just hit #{victim} for #{dmg}")
   end
   def range; 1; end
 end
@@ -83,9 +79,9 @@ class Movement < Ability
     actor.x -= speed
   end
   def move(x_change, y_change = 0)
+    spub :moved, x, y, old_x, old_y
     old_x, old_y = x, y
     x += x_change
     y += y_change
-    spub :moved, x, y, old_x, old_y
   end
 end
