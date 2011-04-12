@@ -14,30 +14,25 @@ class Ability
     last_activated_at = world.tick
   end
 end
-module OtherAffecting
-  module Macros
-    def affects classes
-      affects = []
-      classes.each do |who|
-        affects << case who
-                     when Class
-                       who
-                     when :foes
-                       actor.class.is_a?(Player) ? Enemy : Player
-                     when :friends
-                       actor.class
-                   end
-      end
-      default :affects, affects
+class OtherAffecting < Ability
+  attr_accessor :affects
+  def targets
+    world.types_in_range(actor,format_affects(affects))
+  end
+  def format_affects classes
+    classes.each do |who|
+      affects << case who
+                   when Class
+                     who
+                   when :foes
+                     actor.class.is_a?(Player) ? Enemy : Player
+                   when :friends
+                     actor.class
+                 end
     end
   end
-  macros Macros
-  def targets
-    world.types_in_range(actor,affects)
-  end
 end
-module AreaAffect
-  include OtherAffecting
+class AreaAffect < OtherAffecting
   attr_accessor :range
   def invoke
     in_range = targets
@@ -47,8 +42,7 @@ module AreaAffect
     end
   end
 end
-module Targetted
-  include OtherAffecting
+class Targetted < OtherAffecting
   attr_accessor :range, :target
   def invoke
     in_range = targets
@@ -59,9 +53,8 @@ module Targetted
     affect(target)
   end
 end
-class Heal < Ability
-  include AreaAffect
-  affects :friends
+class Heal < AreaAffect
+  default :affects, :friends
   def affect beneficary
     beneficary.hps += 10
     pub(beneficary,10)
@@ -70,10 +63,9 @@ class Heal < Ability
     World.pub("#{actor} just healed #{beneficary} for #{dmg}")
   end
 end
-class Melee < Ability
+class Melee < AreaAffect
   numeric_attr_accessor :damage
-  include AreaAffect
-  affects :foes
+  default :affects, :foes
   def affect victim
     dmg = damage
     victim.hps -= dmg
