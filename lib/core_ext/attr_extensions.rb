@@ -7,6 +7,9 @@ class Module
     end
   end
   def default iv, value = nil, &value_proc
+    if iv.is_a? Hash
+      return iv.each_pair {|k,v| default(k,v)}
+    end
     define_method iv do
       iv = "@#{sym}"
       unless instance_variable_get(iv)

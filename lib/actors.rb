@@ -38,7 +38,10 @@ end
 class Enemy < Actor
 end
 class Zombie < Enemy
-  default (:abilities) { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
+  default(:abilities) { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
+  default :hps      => 15,
+          :energy   => 5,
+          :renegate => 10
   def current_ability
     abilities.random
   end
