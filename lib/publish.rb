@@ -19,15 +19,15 @@ module Publish
       end
     end
     module Macros
-      def evented_accessor *symbs
+      def attr_writer_evented *symbs
         symbs.each do |sym|
-          mutator = "#{sym}="
-          define_method "#{sym}_with_publish=" do |val|
+          define_method "#{sym}_with_publish=" do |val,&block|
             pre = self.send sym
-            self.send "#{sym}_without_publish=", val
+            self.send "#{sym}_without_publish=", val, &block
             pub self, :change, sym, val, pre
           end
-          alias_method_chain mutator, 'publish'
+          attr_writer sym
+          alias_method_chain "#{sym}=", 'publish'
         end
       end
     end

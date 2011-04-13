@@ -2,11 +2,11 @@ module Positioned
   numeric_attr_accessor :x, :y
 end
 class Actor
-  attr_accessor :name, :abilities, :dead
+  attr_accessor :name, :abilities
   numeric_attr_accessor :hps, :energy, :regenerate, :recharge
   attr_reader_with_default :dead, false
   include Publish::Publisher
-  evented_accessor :energy, :hps, :dead
+  attr_writer_evented :energy, :hps, :dead
   include Positioned
   include HashInitializer
   include Worldly
