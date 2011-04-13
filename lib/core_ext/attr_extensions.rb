@@ -16,9 +16,10 @@ class Module
       define_method(sym, default.is_a?(Proc) ? default : Proc.new { default })
       setter = "#{sym}="
       define_method "#{sym}_with_default_remove=" do |to|
-        class_eval do
+        eigen = class << self; self; end
+        eigen.instance_eval do
           attr_reader sym
-          alias_method sym, "#{sym}_without_default_remove="
+          alias_method setter, "#{sym}_without_default_remove="
         end
         self.send setter, to
       end
