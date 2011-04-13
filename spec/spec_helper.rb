@@ -1,9 +1,6 @@
 require 'rspec'
-require 'pathname'
-lib_path = Pathname.new(File.join(File.dirname(__FILE__),'..','lib'))
-lib = Class.new do
-  define_method :req do |path|
-    require lib_path.join(path).to_s
-  end
+require 'mocha'
+require_relative '../lib/engine'
+RSpec.configure do |config|
+  config.mock_framework = :mocha
 end
-Lib = lib.new

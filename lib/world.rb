@@ -3,11 +3,10 @@ class World
   attr_accessor :actors, :tick_pause_secs, :tick_max
   numeric_attr_accessor :tick
   attr_reader :publish_context
-  default(:publish_context) { PublishContext.new }
-  default(:map) { Map.new }
-  default :tick_pause_secs => 3,
-          :tick_max => 1000
-
+  attr_reader_with_default :tick_pause_secs => 3,
+                           :tick_max => 1000,
+                           :publish_context => -> { Publish::PublishContext.new },
+                           :map => -> { Map.new }
   delegate :pub, :spub, :events, :to => :publish_context
   delegate Map, :to => :map
   def run
@@ -22,7 +21,9 @@ class World
     within_range(positioned,types(types),range) - [positioned]
   end
   def population *actor_types
-    actors.select {|a| actor_types.include?(a.class) }
+    actors.select do |actor|
+      actor_types.any? {|type| actor.class <= type }
+    end
   end
   def round_over?
     tick > tick_max || population(Player).empty? || population(Enemy).empty?
@@ -33,11 +34,14 @@ class World
       coords
     end
   end
+  def universalise
+    Kernel.const_set('WorldInstance',self)
+  end
 end
 # gives instance access to world, via top level WorldInstance const, or a personal world
 module Worldly
   attr_reader :world
-  default(:world) { WorldInstance || World.new }
+  attr_reader_with_default(:world) { WorldInstance || World.new }
   include Publish::Publisher
   delegate :pub, :spub, :to => :world
 end

@@ -4,7 +4,7 @@ end
 class Actor
   attr_accessor :name, :abilities, :dead
   numeric_attr_accessor :hps, :energy, :regenerate, :recharge
-  default :dead, false
+  attr_reader_with_default :dead, false
   include Publish::Publisher
   evented_accessor :energy, :hps, :dead
   include Positioned
@@ -36,7 +36,7 @@ class Actor
     end
   end
   def to_s
-    name
+    name || "UnamedActor<#{self.class}>"
   end
 end
 class Player < Actor
@@ -44,10 +44,10 @@ end
 class Enemy < Actor
 end
 class Zombie < Enemy
-  default(:abilities) { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
-  default :hps      => 15,
+  attr_reader_with_default :hps      => 15,
           :energy   => 5,
-          :renegate => 10
+          :renegate => 10,
+          :abilities => -> { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
   def current_ability
     abilities.random
   end

@@ -56,7 +56,7 @@ class Targetted < OtherAffecting
 end
 class Heal < AreaAffect
   numeric_attr_accessor :healing
-  default :affects, :friends
+  attr_reader_with_default :affects, :friends
   def affect beneficary
     spub :heal, beneficary, healing, "#{actor} just healed #{beneficary} for #{healing}"
     beneficary.hps += healing
@@ -64,7 +64,7 @@ class Heal < AreaAffect
 end
 class Melee < AreaAffect
   numeric_attr_accessor :damage
-  default :affects, :foes
+  attr_reader_with_default :affects, :foes
   def affect victim
     spub :melee, victim, damage, "#{actor} just struck #{victim} for #{damage}"
     dmg = damage
@@ -74,7 +74,7 @@ class Melee < AreaAffect
 end
 class Movement < Ability
   numeric_attr_accessor :speed
-  default(:position) { Position.new(0,0) }
+  attr_reader_with_default(:position) { Position.new(0,0) }
   def invoke
     actor.x -= speed
   end
