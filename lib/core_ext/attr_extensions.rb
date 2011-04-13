@@ -6,16 +6,17 @@ class Module
       default sym, 0
     end
   end
-  def default iv, value = nil, &value_proc
-    if iv.is_a? Hash
-      return iv.each_pair {|k,v| default(k,v)}
-    end
-    define_method iv do
+  def default sym, value = nil, &value_proc
+    if sym.is_a? Hash
+      sym.each_pair {|k,v| default(k,v)}
+    else
       iv = "@#{sym}"
-      unless instance_variable_get(iv)
-        instance_variable_set(iv, value || value_proc.call)
+      define_method sym do
+        unless instance_variable_get(iv)
+          instance_variable_set(iv, value.nil? ? value_proc.call : value)
+        end
+        instance_variable_get(iv)
       end
-      instance_variable_get(iv)
     end
   end
 end

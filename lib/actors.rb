@@ -2,10 +2,11 @@ module Positioned
   numeric_attr_accessor :x, :y
 end
 class Actor
-  attr_accessor :name, :abilities
+  attr_accessor :name, :abilities, :dead
   numeric_attr_accessor :hps, :energy, :regenerate, :recharge
+  default :dead, false
   include Publish::Publisher
-  evented_accessor :hps, :energy
+  evented_accessor :energy, :hps, :dead
   include Positioned
   include HashInitializer
   include Worldly
@@ -13,13 +14,18 @@ class Actor
     @tick_callbacks ||= methods.select {|method| /_on_tick$/ =~ method}
   end
   def tick
-    tick_callbacks.each {|method| self.send method }
+    tick_callbacks.each {|method| self.send method } unless dead
   end
   def regenerate_and_run_activity_on_tick
     self.hps += regenerate
     self.energy += recharge
     self.current_ability.tick
   end
+  def hps_with_death= val
+    dead = true if val <= 0
+    hps_without_death = val
+  end
+  alias_method_chain :hps=, 'death'
   def current_ability
     @current_ability ||= abilities.first
   end
