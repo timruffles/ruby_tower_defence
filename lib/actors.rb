@@ -44,10 +44,10 @@ end
 class Enemy < Actor
 end
 class Zombie < Enemy
-  attr_reader_with_default :hps      => 15,
-          :energy   => 5,
-          :renegate => 10,
-          :abilities => -> { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
+  attr_reader_with_default :hps => 15,
+                           :energy => 5,
+                           :renegate => 10,
+                           :abilities => -> { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
   def current_ability
     abilities.random
   end

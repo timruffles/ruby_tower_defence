@@ -74,7 +74,6 @@ class Melee < AreaAffect
 end
 class Movement < Ability
   numeric_attr_accessor :speed
-  attr_reader_with_default(:position) { Position.new(0,0) }
   def invoke
     actor.x -= speed
   end

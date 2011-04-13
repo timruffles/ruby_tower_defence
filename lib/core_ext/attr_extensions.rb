@@ -11,9 +11,11 @@ class Module
       sym.each_pair {|k,v| attr_reader_with_default(k,v)}
     else
       iv = "@#{sym}"
+      setter = "#{sym}="
       define_method sym do
-        unless instance_variable_get(iv)
-          instance_variable_set(iv, value.is_a?(Proc) ? value.() : value.nil? ? value_proc.call : value)
+        if instance_variable_get(iv).nil?
+          val = value.is_a?(Proc) ? value.() : value.nil? ? value_proc.call : value
+          respond_to?(setter) ? self.send(setter, val) : instance_variable_set(iv,val)
         end
         instance_variable_get(iv)
       end
