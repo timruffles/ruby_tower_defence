@@ -2,11 +2,11 @@ module Positioned
   numeric_attr_accessor :x, :y
 end
 class Actor
-  attr_accessor :name, :abilities
+  attr_accessor :name
   numeric_attr_accessor :hps, :energy, :regenerate, :recharge
-  attr_reader_with_default :dead, false
+  attr_accessor_with_default :dead, false
   include Publish::Publisher
-  attr_writer_evented :energy, :hps, :dead
+  attr_accessor_evented :energy, :hps, :dead
   include Positioned
   include HashInitializer
   include Worldly
@@ -19,6 +19,7 @@ class Actor
   def regenerate_and_run_activity_on_tick
     self.hps += regenerate
     self.energy += recharge
+    puts "#{self.class}"
     self.current_ability.tick
   end
   def hps_with_death= val
@@ -44,10 +45,10 @@ end
 class Enemy < Actor
 end
 class Zombie < Enemy
-  attr_reader_with_default :hps => 15,
-                           :energy => 5,
-                           :renegate => 10,
-                           :abilities => -> { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
+  attr_accessor_with_default :hps => 15,
+                             :energy => 5,
+                             :renegate => 10,
+                             :abilities => -> { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
   def current_ability
     abilities.random
   end

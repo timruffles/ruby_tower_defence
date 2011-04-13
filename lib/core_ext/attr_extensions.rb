@@ -3,25 +3,29 @@ class Module
   def numeric_attr_accessor *symbs
     symbs.each do |sym|
       attr_writer sym
-      attr_reader_with_default sym, 0
+      attr_accessor_with_default sym, 0
     end
   end
-  def attr_reader_with_default sym, value = nil, &value_proc
+  def attr_accessor_with_default sym, default = Proc.new {}
     if sym.is_a? Hash
-      sym.each_pair {|k,v| attr_reader_with_default(k,v)}
-    else
-      iv = "@#{sym}"
-      setter = "#{sym}="
-      define_method sym do
-        puts iv, instance_variable_get(iv).nil?
-        if instance_variable_get(iv).nil?
-          val = value.is_a?(Proc) ? value.() : value.nil? ? value_proc.call : value
-          puts "b4 #{instance_variable_get(iv).nil?}, #{val}"
-          respond_to?(setter) ? self.send(setter, val) : instance_variable_set(iv,val)
-          puts "after #{instance_variable_get(iv)}, #{val}"
-        end
-        instance_variable_get(iv)
+      sym.each_pair do |k,v|
+        attr_accessor_with_default(k,v)
       end
+    else
+      # initial getter
+      define_method(sym, default.is_a?(Proc) ? default : Proc.new { default })
+      setter = "#{sym}="
+      define_method "#{sym}_with_default_remove=" do |to|
+        class_eval do
+          attr_reader sym
+          alias_method sym, "#{sym}_without_default_remove="
+        end
+        self.send setter, to
+      end
+      unless instance_methods.include?(setter)
+        attr_writer sym
+      end
+      alias_method_chain setter, 'default_remove'
     end
   end
 end

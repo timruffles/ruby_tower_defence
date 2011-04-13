@@ -56,7 +56,7 @@ class Targetted < OtherAffecting
 end
 class Heal < AreaAffect
   numeric_attr_accessor :healing
-  attr_reader_with_default :affects, :friends
+  attr_accessor_with_default :affects, :friends
   def affect beneficary
     spub :heal, beneficary, healing, "#{actor} just healed #{beneficary} for #{healing}"
     beneficary.hps += healing
@@ -64,7 +64,7 @@ class Heal < AreaAffect
 end
 class Melee < AreaAffect
   numeric_attr_accessor :damage
-  attr_reader_with_default :affects, :foes
+  attr_accessor_with_default :affects, :foes
   def affect victim
     spub :melee, victim, damage, "#{actor} just struck #{victim} for #{damage}"
     dmg = damage

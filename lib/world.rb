@@ -3,10 +3,10 @@ class World
   attr_accessor :actors, :tick_pause_secs, :tick_max
   numeric_attr_accessor :tick
   attr_reader :publish_context
-  attr_reader_with_default :tick_pause_secs => 3,
-                           :tick_max => 1000,
-                           :publish_context => -> { Publish::PublishContext.new },
-                           :map => -> { Map.new }
+  attr_accessor_with_default :tick_pause_secs => 3,
+                             :tick_max => 1000,
+                             :publish_context => -> { Publish::PublishContext.new },
+                             :map => -> { Map.new }
   delegate :pub, :spub, :events, :to => :publish_context
   delegate Map, :to => :map
   def run
@@ -41,7 +41,7 @@ end
 # gives instance access to world, via top level WorldInstance const, or a personal world
 module Worldly
   attr_reader :world
-  attr_reader_with_default(:world) { WorldInstance || World.new }
+  attr_accessor_with_default(:world) { WorldInstance || World.new }
   include Publish::Publisher
   delegate :pub, :spub, :to => :world
 end
