@@ -2,9 +2,11 @@ require_relative 'core_ext'
 module Publish
   class PublishContext
     attr_accessor :events
-    attr_accessor_with_default(:events) { [] }
     def publish event, subject_class, subject, *args
       events.push([subject_class,subject,event].concat(args))
+    end
+    def events
+      @events ||= []
     end
     alias :pub :publish
     def scoped_publish event
@@ -19,14 +21,14 @@ module Publish
       end
     end
     module Macros
-      def attr_accessor_evented *symbs
+      def attr_writer_evented *symbs
         symbs.each do |sym|
-          attr_accessor sym
           define_method "#{sym}_with_publish=" do |val,&block|
-            pre = self.send sym
+            pre = self.instance_variable_get "@#{sym}"
             self.send "#{sym}_without_publish=", val, &block
             pub self, :change, sym, val, pre
           end
+          attr_writer sym unless instance_methods.include?(sym)
           alias_method_chain "#{sym}=", 'publish'
         end
       end

@@ -6,4 +6,7 @@ describe Actor do
     ability.expects(:actor=).with(actor)
     actor.abilities = [ability]
   end
+  it "has access to world" do
+    actor.world.should be_a(World)
+  end
 end

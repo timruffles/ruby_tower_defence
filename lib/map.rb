@@ -1,4 +1,4 @@
-module Map
+class Map
   attr_accessor :x_size, :y_size
   def within_range(from,objects,range)
     objects.select do |positioned|
