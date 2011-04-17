@@ -1,8 +1,7 @@
 class World
   include HashInitializer
-  attr_accessor :actors, :tick_pause_secs, :tick_max
+  attr_accessor :actors, :tick_pause_secs, :tick_max, :publish_context, :map
   numeric_attr_accessor :tick
-  attr_reader :publish_context
   defaults :tick_pause_secs => 3,
            :tick_max => 1000,
            :publish_context => -> { Publish::PublishContext.new },
@@ -14,11 +13,11 @@ class World
       actors.each(&:tick)
       yield self if block_given?
       sleep tick_pause_secs if tick_pause_secs > 0
-      tick += 1
+      self.tick += 1
     end
   end
   def types_in_range positioned, types, range
-    within_range(positioned,types(types),range) - [positioned]
+    within_range(positioned,population(*types),range) - [positioned]
   end
   def population *actor_types
     actors.select do |actor|
@@ -43,6 +42,6 @@ module Worldly
   include Publish::Publisher
   delegate :pub, :spub, :to => :world
   def world
-    @worlld ||= WorldInstance rescue World.new
+    @world ||= WorldInstance rescue World.new
   end
 end

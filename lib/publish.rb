@@ -9,7 +9,7 @@ module Publish
       @events ||= []
     end
     alias :pub :publish
-    def scoped_publish event
+    def scoped_publish event, *args
       pub(event,self.class,self,*args)
     end
     alias :spub :scoped_publish
@@ -24,11 +24,10 @@ module Publish
       def attr_writer_evented *symbs
         symbs.each do |sym|
           define_method "#{sym}_with_publish=" do |val,&block|
-            pre = self.instance_variable_get "@#{sym}"
+            pub self, :change, sym, val
             self.send "#{sym}_without_publish=", val, &block
-            pub self, :change, sym, val, pre
           end
-          attr_writer sym unless instance_methods.include?(sym)
+          attr_writer sym unless instance_methods.include?("sym=".to_sym)
           alias_method_chain "#{sym}=", 'publish'
         end
       end

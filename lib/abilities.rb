@@ -15,26 +15,28 @@ class Ability
     last_activated_at = world.tick
   end
 end
+class Wait < Ability
+  def tick
+  end
+end
 class OtherAffecting < Ability
   attr_accessor :affects
-  def targets
-    world.types_in_range(actor,format_affects(affects))
-  end
-  def format_affects classes
-    classes.each do |who|
-      affects << case who
-                   when Class
-                     who
-                   when :foes
-                     actor.class.is_a?(Player) ? Enemy : Player
-                   when :friends
-                     actor.class
-                 end
-    end
+  def format_affects who
+     [case who
+       when :foes
+         actor.class.is_a?(Player) ? Enemy : Player
+       when :friends
+         actor.class
+       when Class
+         who
+     end]
   end
 end
 class AreaAffect < OtherAffecting
   attr_accessor :range
+  def targets
+    world.types_in_range(actor,format_affects(affects),range)
+  end
   def invoke
     in_range = targets
     activated unless in_range.empty?
@@ -45,6 +47,9 @@ class AreaAffect < OtherAffecting
 end
 class Targetted < OtherAffecting
   attr_accessor :range, :target
+  def targets
+    world.types_in_range(actor,format_affects(affects),range)
+  end
   def invoke
     in_range = targets
     return if in_range.empty?
@@ -56,7 +61,7 @@ class Targetted < OtherAffecting
 end
 class Heal < AreaAffect
   numeric_attr_accessor :healing
-  defaults :affects => :friends
+  defaults :affects, :friends
   def affect beneficary
     spub :heal, beneficary, healing, "#{actor} just healed #{beneficary} for #{healing}"
     beneficary.hps += healing
@@ -64,7 +69,7 @@ class Heal < AreaAffect
 end
 class Melee < AreaAffect
   numeric_attr_accessor :damage
-  defaults :affects => :foes
+  defaults :affects, :foes
   def affect victim
     spub :melee, victim, damage, "#{actor} just struck #{victim} for #{damage}"
     dmg = damage

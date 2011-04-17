@@ -8,9 +8,10 @@ class Actor
   include Publish::Publisher
 
   attr_accessor :name
+  attr_reader :dead
   numeric_attr_accessor :hps, :energy, :regenerate, :recharge
   attr_writer_evented :energy, :hps, :dead
-  defaults :dead => false
+  defaults :dead, false
 
   def tick_callbacks
     @tick_callbacks ||= methods.select {|method| /_on_tick$/ =~ method}
@@ -29,11 +30,15 @@ class Actor
   end
   alias_method_chain :hps=, 'death'
   def current_ability
-    @current_ability ||= abilities.first
+    @current_ability ||= Wait.new
+  end
+  def abilities
+    []
   end
   def abilities= abilities
     @abilities = abilities
     @abilities.each do |ability|
+      puts ability.inspect
       ability.actor = self
     end
   end
@@ -46,11 +51,16 @@ end
 class Enemy < Actor
 end
 class Zombie < Enemy
-  defaults :hps => 15,
-           :energy => 5,
-           :renegate => 10,
-           :abilities => -> { [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] }
+  defaults :hps, 15
+  defaults :energy, 5
+  defaults :renegate, 10
   def current_ability
     abilities.random
+  end
+  def abilities
+    unless @abilities
+      self.abilities = [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)]
+    end
+    @abilities
   end
 end
