@@ -2,9 +2,16 @@ GEM
   remote: http://rubygems.org/
   specs:
     activesupport (3.0.6)
+    coffee-script (2.2.0)
+      coffee-script-source
+      execjs
+    coffee-script-source (1.0.1)
     diff-lcs (1.1.2)
+    execjs (0.2.0)
+    haml (3.0.25)
     i18n (0.5.0)
     mocha (0.9.12)
+    rack (1.2.2)
     rspec (2.5.0)
       rspec-core (~> 2.5.0)
       rspec-expectations (~> 2.5.0)
@@ -13,12 +20,21 @@ GEM
     rspec-expectations (2.5.0)
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.5.0)
+    ruby-geometry (0.0.2)
+    sinatra (1.2.3)
+      rack (~> 1.1)
+      tilt (>= 1.2.2, < 2.0)
+    tilt (1.2.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   activesupport
+  coffee-script
+  haml
   i18n
   mocha
   rspec
+  ruby-geometry
+  sinatra
