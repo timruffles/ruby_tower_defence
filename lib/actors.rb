@@ -1,6 +1,3 @@
-module Positioned
-  numeric_attr_accessor :x, :y
-end
 class Actor
   include HashInitializer
   include Positioned
@@ -49,13 +46,17 @@ end
 class Player < Actor
 end
 class Enemy < Actor
+  attr_accessor :ai
+  def tick
+    ai.tick
+  end
 end
 class Zombie < Enemy
-  defaults :hps, 15
-  defaults :energy, 5
-  defaults :renegate, 10
-  def current_ability
-    abilities.random
+  defaults :hps => 15
+           :energy => 5
+           :renegate => 10
+  def ai
+    @ai ||= ZombieAI.new self
   end
   def abilities
     unless @abilities

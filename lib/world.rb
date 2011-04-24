@@ -1,3 +1,4 @@
+Geo = Geometry
 class World
   include HashInitializer
   attr_accessor :actors, :tick_pause_secs, :tick_max, :publish_context, :map
@@ -43,5 +44,15 @@ module Worldly
   delegate :pub, :spub, :to => :world
   def world
     @world ||= WorldInstance rescue World.new
+  end
+end
+module Positioned
+  attr_accessor :point
+  delegate :x, :y, :to => :point
+  def distance_to positioned
+    Geo.distance point, positioned
+  end
+  def point
+    @point ||= Point.new 0,0
   end
 end

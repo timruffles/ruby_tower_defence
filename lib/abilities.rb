@@ -82,6 +82,8 @@ class Movement < Ability
   def invoke
     actor.x -= speed
   end
+  def towards
+  end
   def move(x_change, y_change = 0)
     spub :moved, x, y, old_x, old_y
     old_x, old_y = x, y
