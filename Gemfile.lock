@@ -10,6 +10,7 @@ GEM
     execjs (0.2.0)
     haml (3.0.25)
     i18n (0.5.0)
+    json (1.5.1)
     mocha (0.9.12)
     rack (1.2.2)
     rspec (2.5.0)
@@ -34,6 +35,7 @@ DEPENDENCIES
   coffee-script
   haml
   i18n
+  json
   mocha
   rspec
   ruby-geometry

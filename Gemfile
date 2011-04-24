@@ -10,4 +10,5 @@ group :server do
   gem 'sinatra'
   gem 'haml'
   gem 'coffee-script'
+  gem 'json'
 end

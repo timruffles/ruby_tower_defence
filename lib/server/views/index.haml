@@ -1,5 +1,16 @@
 %html
   %head
     %title ZombieAGE!
-    %script{:src => 'z/game.js'}
+    %script{:src => 'js/libs/jquery.js'}
+    %script{:src => 'js/libs/underscore.js'}
+    %script{:src => 'js/libs/backbone.js'}
+    %script{:src => 'js/libs/dojo.js'}
+    %script{:src => 'js/z/lib_conf.js'}
+    %script{:src => 'js/z/v/feed.js'}
+    %script{:src => 'js/z/v/world.js'}
+    %script{:src => 'js/z/game.js'}
+    %link{:href => 'css/zombie.css',:type => 'text/css', :rel => 'stylesheet'}
   %body
+    %h2 Here be zombies!
+    %table#world
+    %ul#feed
