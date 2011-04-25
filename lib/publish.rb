@@ -10,14 +10,13 @@ module Publish
     end
   end
   module Publisher
-    def publish event, subject_class, subject, *args
+    def pub event, subject_class, subject, *args
       publish_context.event([subject_class,subject,event].concat(args))
     end
-    alias :pub :publish
-    def scoped_publish event, *args
-      pub(event,self.class,self,*args)
+    # scoped publish
+    def spub event, *args
+      pub event,self.class,self,*args
     end
-    alias :spub :scoped_publish
     class << self
       def included(into)
         into.send :extend, Macros

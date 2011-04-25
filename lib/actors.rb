@@ -7,7 +7,7 @@ class Actor
   attr_accessor :name
   attr_reader :dead
   numeric_attr_accessor :hps
-  attr_writer_evented :energy, :hps, :dead
+  attr_writer_evented :hps, :dead
   defaults :dead, false
   alias :dead? :dead
   attr_accessor :ai
@@ -24,8 +24,8 @@ class Actor
     ai.tick
   end
   def hps_with_death= val
-    dead = true if val <= 0
-    hps_without_death = val
+    self.dead = true if val <= 0
+    self.send :hps_without_death=, val
   end
   alias_method_chain :hps=, 'death'
   def current_ability
@@ -48,6 +48,7 @@ class Actor
   end
 end
 class Player < Actor
+  defaults :hps => 15
   def ai
     @ai ||= PlayerAI.new self
   end
@@ -61,7 +62,7 @@ end
 class Enemy < Actor
 end
 class Zombie < Enemy
-  defaults :hps => 15
+  defaults :hps => 9
   def ai
     @ai ||= ZombieAI.new self
   end

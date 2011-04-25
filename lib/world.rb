@@ -20,7 +20,7 @@ class World
     within_range(positioned,population(*types),range) - [positioned]
   end
   def population *actor_types
-    actors.select do |actor|
+    actors.reject(&:dead?).select do |actor|
       actor_types.any? {|type| actor.class <= type }
     end
   end

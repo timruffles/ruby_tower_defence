@@ -1,3 +1,0 @@
-describe Pub do
-
-end
