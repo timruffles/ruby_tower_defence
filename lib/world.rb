@@ -1,18 +1,24 @@
 Geo = Geometry
 class World
   include HashInitializer
-  attr_accessor :actors, :tick_pause_secs, :tick_max, :publish_context, :map
+  attr_accessor :actors, :tick, :tick_pause_secs, :tick_max, :publish_context, :area
   numeric_attr_accessor :tick
   defaults :tick_pause_secs => 1,
            :tick_max => 1000,
            :publish_context => -> { Publish::PublishContext.new },
-           :map => -> { Map.new }
-  delegate Map, :to => :map
+           :actors => []
+  delegate AreaInterface, :to => :area
+  def initialize_with_setup opts = {}
+    initialize_without_setup opts
+    area.world = self
+  end
+  alias_method_chain :initialize, 'setup'
   def run
     until round_over? do
       actors.each(&:tick)
       yield self if block_given?
       sleep tick_pause_secs if tick_pause_secs > 0
+      area.tick
       self.tick += 1
     end
   end
@@ -42,7 +48,8 @@ module Worldly
   include Publish::Publisher
   delegate :publish_context, :to => :world
   def world
-    @world ||= WorldInstance rescue World.new
+    @world ||= WorldInstance rescue nil
+    @world || World.new
   end
 end
 module Positioned

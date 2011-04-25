@@ -11,8 +11,10 @@ module Views
           output = case at_coord
                      when nil
                        ' '
+                     when at_coord.dead?
+                       "O"
                      when Enemy
-                       'E'
+                       'Z'
                      when Player
                        'P'
                    end

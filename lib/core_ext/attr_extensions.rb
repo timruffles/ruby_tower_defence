@@ -7,10 +7,8 @@ class Module
     end
   end
   def delegate_with_module klass, *args, to
-    if klass.is_a?(Class)
+    if klass.is_a?(Class) || klass.is_a?(Module)
       delegate_without_module(*klass.instance_methods - Object.instance_methods,to)
-    elsif klass.is_a?(Module)
-      delegate_without_module(*klass.methods - Object.methods,to)
     else
       delegate_without_module klass, *args, to
     end

@@ -25,6 +25,7 @@ class Actor
   end
   def hps_with_death= val
     self.dead = true if val <= 0
+    puts "#{self} hps set to: dead #{dead?}"
     self.hps_without_death = val
   end
   alias_method_chain :hps=, 'death'
@@ -53,9 +54,7 @@ class Player < Actor
     @ai ||= PlayerAI.new self
   end
   def abilities
-    unless @abilities
-      self.abilities = [Ranged.new(:range => 3, :damage => 3)]
-    end
+    self.abilities = [Ranged.new(:range => 3, :damage => 3)] unless @abilities
     @abilities
   end
 end
@@ -67,9 +66,7 @@ class Zombie < Enemy
     @ai ||= ZombieAI.new self
   end
   def abilities
-    unless @abilities
-      self.abilities = [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)]
-    end
+    self.abilities = [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] unless @abilities
     @abilities
   end
 end

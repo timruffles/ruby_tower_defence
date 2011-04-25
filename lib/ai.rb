@@ -8,13 +8,14 @@ class AI
     actors.sort {|a,b| a.hps <=> b.hps }.first
   end
   def closest actors
-    actors.sort {|a,b| distance_to(a) <=> distance_to(b) }.first
+    actors.sort {|a,b| actor.distance_to(a) <=> actor.distance_to(b) }.first
   end
 end
 class ZombieAI < AI
   def tick
     self.current_target = nil if current_target && current_target.dead?
-    approach_kill self.current_target ||= favoured_target
+    self.current_target ||= favoured_target
+    approach_kill current_target if current_target
   end
   def approach_kill target
     # TODO need to query classes of attack for range
@@ -23,6 +24,7 @@ class ZombieAI < AI
       attack current_target
     else
       actor.invoke :movement, current_target
+      pp "#{self} is moving"
     end
   end
   def favoured_target
@@ -34,9 +36,10 @@ class ZombieAI < AI
 end
 class PlayerAI < AI
   def tick
-    self.current_target = nil if current_target && current_target.dead?
-    self.current_target ||= closest world.population(Zombie)
-    attack current_target
+    attack favoured_target
+  end
+  def favoured_target
+    closest world.population(Zombie)
   end
   def attack target
     actor.invoke :ranged, target
