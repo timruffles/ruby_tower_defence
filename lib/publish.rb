@@ -2,19 +2,22 @@ require_relative 'core_ext'
 module Publish
   class PublishContext
     attr_accessor :events
-    def publish event, subject_class, subject, *args
-      events.push([subject_class,subject,event].concat(args))
-    end
     def events
       @events ||= []
+    end
+    def event *args
+      events.push(args)
+    end
+  end
+  module Publisher
+    def publish event, subject_class, subject, *args
+      publish_context.event([subject_class,subject,event].concat(args))
     end
     alias :pub :publish
     def scoped_publish event, *args
       pub(event,self.class,self,*args)
     end
     alias :spub :scoped_publish
-  end
-  module Publisher
     class << self
       def included(into)
         into.send :extend, Macros

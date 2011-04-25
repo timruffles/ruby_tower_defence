@@ -6,20 +6,22 @@ class Actor
 
   attr_accessor :name
   attr_reader :dead
-  numeric_attr_accessor :hps, :energy, :regenerate, :recharge
+  numeric_attr_accessor :hps
   attr_writer_evented :energy, :hps, :dead
   defaults :dead, false
-
+  alias :dead? :dead
+  attr_accessor :ai
   def tick_callbacks
     @tick_callbacks ||= methods.select {|method| /_on_tick$/ =~ method}
   end
   def tick
-    tick_callbacks.each {|method| self.send method } unless dead
+    tick_callbacks.each {|method| self.send method } unless dead?
   end
   def regenerate_and_run_activity_on_tick
-    self.hps += self.regenerate
-    self.energy += self.recharge
     self.current_ability.tick
+  end
+  def hand_off_to_ai_on_tick
+    ai.tick
   end
   def hps_with_death= val
     dead = true if val <= 0
@@ -33,28 +35,33 @@ class Actor
     []
   end
   def abilities= abilities
-    @abilities = abilities
-    @abilities.each do |ability|
-      puts ability.inspect
+    @abilities = abilities.map do |ability|
       ability.actor = self
-    end
+      ability.class.to_s.underscore.to_sym
+    end.zip(abilities).instance_eval { Hash[self] }
+  end
+  def invoke ability, on
+    abilities[ability].invoke on
   end
   def to_s
     name || "UnamedActor<#{self.class}>"
   end
 end
 class Player < Actor
+  def ai
+    @ai ||= PlayerAI.new self
+  end
+  def abilities
+    unless @abilities
+      self.abilities = [Ranged.new(:range => 3, :damage => 3)]
+    end
+    @abilities
+  end
 end
 class Enemy < Actor
-  attr_accessor :ai
-  def tick
-    ai.tick
-  end
 end
 class Zombie < Enemy
   defaults :hps => 15
-           :energy => 5
-           :renegate => 10
   def ai
     @ai ||= ZombieAI.new self
   end

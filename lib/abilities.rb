@@ -4,13 +4,6 @@ class Ability
   include HashInitializer
   delegate :world, :to => :actor
   delegate :pub, :spub, :to => :actor
-  def tick
-    if world.tick >= last_activated_at + delay
-      invoke
-    end
-  end
-  def invoke
-  end
   def activated
     last_activated_at = world.tick
   end
@@ -47,19 +40,14 @@ class AreaAffect < OtherAffecting
 end
 class Targetted < OtherAffecting
   attr_accessor :range, :target
-  def targets
-    world.types_in_range(actor,format_affects(affects),range)
+  def in_range? target
+    actor.distance_to(target) <= range
   end
-  def invoke
-    in_range = targets
-    return if in_range.empty?
-    unless in_range.include?(target)
-      target = in_range.first
-    end
-    affect(target)
+  def invoke target
+    affect(target) if in_range? target
   end
 end
-class Heal < AreaAffect
+class Heal < Targetted
   numeric_attr_accessor :healing
   defaults :affects, :friends
   def affect beneficary
@@ -67,9 +55,8 @@ class Heal < AreaAffect
     beneficary.hps += healing
   end
 end
-class Melee < AreaAffect
+class Melee < Targetted
   numeric_attr_accessor :damage
-  defaults :affects, :foes
   def affect victim
     spub :melee, victim, damage, "#{actor} just struck #{victim} for #{damage}"
     dmg = damage
@@ -77,17 +64,28 @@ class Melee < AreaAffect
   end
   def range; 1; end
 end
+class Ranged < Targetted
+  numeric_attr_accessor :damage
+  def affect victim
+    spub :ranged, victim, damage, "#{actor} just shot #{victim} for #{damage}"
+    dmg = damage
+    victim.hps -= dmg
+  end
+  def range; 3; end
+end
 class Movement < Ability
   numeric_attr_accessor :speed
-  def invoke
-    actor.x -= speed
-  end
-  def towards
-  end
-  def move(x_change, y_change = 0)
-    spub :moved, x, y, old_x, old_y
-    old_x, old_y = x, y
-    x += x_change
-    y += y_change
+  def invoke towards
+    x_change = y_change = 0
+    if (towards.x - actor.x).abs == 1
+      # we're able to get in front
+      y_change = (actor.y < towards.y ? 1 : -1)
+    else
+      x_change = (actor.x < towards.x ? 1 : -1) * speed
+    end
+    old_x, old_y = actor.x, actor.y
+    actor.x += x_change
+    actor.y += y_change
+    spub :moved, actor.x, actor.y, old_x, old_y
   end
 end

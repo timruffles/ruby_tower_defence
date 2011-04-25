@@ -1,8 +1,8 @@
+require 'yaml'
 module Views
   class Ascii
-    defaults :last_events => []
     def view world
-      puts "\e[H\e[2J"
+      puts "\e[H\e[2J" # clear screen
       actors_at_coords = world.actors_by_coords
       (0..world.y_size).each do |row_i|
         row = []
@@ -20,8 +20,9 @@ module Views
         end
         puts "|#{row.join(' ')}|\n"
       end
-      puts (world.publish_context.events - last_events).inspect
-      last_events = world.publish_context.events
+      @last_events ||= 0
+      pp world.publish_context.events.slice(@last_events..-1)
+      @last_events = world.publish_context.events.length
     end
   end
 end

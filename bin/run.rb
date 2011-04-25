@@ -2,7 +2,7 @@
 require_relative '../lib/engine'
 require 'pp'
 ascii = Views::Ascii.new
-world = World.new :actors => [Zombie.new, Player.new], :x_size => 10, :y_size => 10
+world = World.new :actors => [Zombie.new(:x => 10), Player.new], :x_size => 10, :y_size => 10
 world.universalise
 world.run do |world|
   ascii.view(world)

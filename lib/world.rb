@@ -3,11 +3,10 @@ class World
   include HashInitializer
   attr_accessor :actors, :tick_pause_secs, :tick_max, :publish_context, :map
   numeric_attr_accessor :tick
-  defaults :tick_pause_secs => 3,
+  defaults :tick_pause_secs => 1,
            :tick_max => 1000,
            :publish_context => -> { Publish::PublishContext.new },
            :map => -> { Map.new }
-  delegate :pub, :spub, :events, :to => :publish_context
   delegate Map, :to => :map
   def run
     until round_over? do
@@ -41,18 +40,18 @@ end
 # gives instance access to world, via top level WorldInstance const, or a personal world
 module Worldly
   include Publish::Publisher
-  delegate :pub, :spub, :to => :world
+  delegate :publish_context, :to => :world
   def world
     @world ||= WorldInstance rescue World.new
   end
 end
 module Positioned
   attr_accessor :point
-  delegate :x, :y, :to => :point
+  delegate :x, :x=, :y, :y=, :to => :point
   def distance_to positioned
     Geo.distance point, positioned
   end
   def point
-    @point ||= Point.new 0,0
+    @point ||= Geo::Point.new 0,0
   end
 end
