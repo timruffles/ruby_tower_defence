@@ -25,7 +25,7 @@ class Actor
   end
   def hps_with_death= val
     self.dead = true if val <= 0
-    self.send :hps_without_death=, val
+    self.hps_without_death = val
   end
   alias_method_chain :hps=, 'death'
   def current_ability
