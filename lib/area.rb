@@ -5,8 +5,17 @@ module AreaInterface
       distance(from,positioned) <= range
     end
   end
-  def distance a, b
-    Math.sqrt((a.x - b.x)**2 + (a.y - b.y)**2)
+  def types_in_range positioned, types, range
+    within_range(positioned,population(*types),range) - [positioned]
+  end
+  def actors_by_coords
+    actors.inject({}) do |coords,actor|
+      coords[[actor.x,actor.y]] = actor
+      coords
+    end
+  end
+  def blocked? x,y
+    actors_by_coords[[x,y]].any(:blocking?)
   end
   def right
     x_size

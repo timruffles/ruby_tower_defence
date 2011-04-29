@@ -22,9 +22,6 @@ class World
       self.tick += 1
     end
   end
-  def types_in_range positioned, types, range
-    within_range(positioned,population(*types),range) - [positioned]
-  end
   def population *actor_types
     actors.reject(&:dead?).select do |actor|
       actor_types.any? {|type| actor.class <= type }
@@ -32,12 +29,6 @@ class World
   end
   def round_over?
     tick > tick_max || population(Player).empty? || population(Enemy).empty?
-  end
-  def actors_by_coords
-    actors.inject({}) do |coords,actor|
-      coords[[actor.x,actor.y]] = actor
-      coords
-    end
   end
   def universalise
     Kernel.const_set('WorldInstance',self)

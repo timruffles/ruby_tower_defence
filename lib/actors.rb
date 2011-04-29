@@ -11,6 +11,9 @@ class Actor
   defaults :dead, false
   alias :dead? :dead
   attr_accessor :ai
+  def blocking?
+    dead? ? false : true
+  end
   def tick_callbacks
     @tick_callbacks ||= methods.select {|method| /_on_tick$/ =~ method}
   end

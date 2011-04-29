@@ -6,3 +6,8 @@ class Array
     self.send :[], rand * (length)
   end
 end
+class Object
+  def in? enum
+    enum.include? self
+  end
+end

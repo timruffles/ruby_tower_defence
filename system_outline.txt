@@ -1,0 +1,20 @@
+# Load
+  - get current saved game
+    - json dump of world
+  - initialize
+# Input
+  - setup actors
+  - choose abilities
+  - update world
+    - serialize
+# Run
+  - run simulation
+  - serialize events
+# View/Play
+  - play simulation
+  - capture input
+    - serialize input
+# Results
+  - update post-run world with input
+  - update team with results
+  - update players with results

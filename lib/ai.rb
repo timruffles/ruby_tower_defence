@@ -24,7 +24,6 @@ class ZombieAI < AI
       attack current_target
     else
       actor.invoke :movement, current_target
-      pp "#{self} is moving"
     end
   end
   def favoured_target
