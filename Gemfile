@@ -1,10 +1,15 @@
 source :gemcutter
-gem 'rspec'
-gem 'mocha'
 gem 'activesupport'
 gem 'i18n'
 
-gem 'ruby-geometry'
+group :always_require do
+  gem 'ruby-geometry'
+end
+
+group :test do
+  gem 'rspec'
+  gem 'mocha'
+end
 
 group :server do
   gem 'sinatra'
