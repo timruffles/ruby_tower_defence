@@ -11,3 +11,11 @@ shared_examples_for "a graph" do
     graph.nodes.should respond_to :each_pair
   end
 end
+require_relative '../../lib/ai/node'
+describe Node do
+  it "can return a one-dim list representing path to intitial node" do
+    node = Node.new(:a,1,Node.new(:b,1,Node.new(:c,1)))
+    node.to_path.map(&:state).should == [:c, :b, :a]
+  end
+end
+
