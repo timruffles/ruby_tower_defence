@@ -9,6 +9,10 @@ module AreaInterface
   def blocked? point
     at_coords[point].any(:blocking?)
   end
+  def legal? point
+    x,y = point.to_a
+    not (y > top || x > right || y < bottom || x < left)
+  end
   def right
     x_size
   end
@@ -24,7 +28,8 @@ module AreaInterface
 end
 class Area
   attr_accessor :world, :actors_to_spawn, :chunk_size, :spawn_rate_ticks, :last_spawn, :target_population
-  defaults :last_spawn => 0
+  defaults :last_spawn => 0,
+           :graph => -> { XYGraph.new self }
   include HashInitializer
   include AreaInterface
   def tick

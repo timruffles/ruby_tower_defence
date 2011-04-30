@@ -1,4 +1,4 @@
-class Node < Struct.new(:state, :cost, :parent)
+class AI::Node < Struct.new(:state, :cost, :parent)
   def to_path
     unless parent
       [self]

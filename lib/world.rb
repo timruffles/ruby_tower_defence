@@ -68,3 +68,4 @@ module Positioned
     @point ||= Geo::Point.new 0,0
   end
 end
+def p x = 0,y = 0; Point.new x,y; end
