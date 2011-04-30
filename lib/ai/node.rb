@@ -6,4 +6,7 @@ class AI::Node < Struct.new(:state, :cost, :parent)
       parent.to_path.concat [self]
     end
   end
+  def == to
+    to.state == state
+  end
 end

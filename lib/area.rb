@@ -1,5 +1,6 @@
 module AreaInterface
-  attr_accessor :x_size, :y_size, :at_coords
+  numeric_attr_accessor :x_size, :y_size
+  attr_accessor :at_coords
   defaults :at_coords => -> {Hash.new {Set.new}}
   def within_range(from,objects,range)
     objects.select do |positioned|
@@ -7,7 +8,7 @@ module AreaInterface
     end
   end
   def blocked? point
-    at_coords[point].any(:blocking?)
+    at_coords[point].any?(&:blocking?)
   end
   def legal? point
     x,y = point.to_a
@@ -30,8 +31,10 @@ class Area
   attr_accessor :world, :actors_to_spawn, :chunk_size, :spawn_rate_ticks, :last_spawn, :target_population
   defaults :last_spawn => 0,
            :graph => -> { XYGraph.new self }
+  delegate :find_path, :to => :graph
   include HashInitializer
   include AreaInterface
   def tick
   end
+  
 end

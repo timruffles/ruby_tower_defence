@@ -9,7 +9,7 @@ class SortedQueue
     sort
   end
   def next
-    @queue.unshift
+    @queue.shift
   end
   
   private

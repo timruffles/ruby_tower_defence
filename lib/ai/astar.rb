@@ -12,16 +12,16 @@ module AI::AStar
     graph_search graph, queue, start, goal
   end
   def graph_search graph, queue, start, goal
-     closed = {}
-     queue.add start
-     while node = queue.next do
-       return node if goal == node
-       unless closed.has_key? node
-         closed[node] = true
-         queue.add graph.neighbours node
-       end
-     end
-   end
+    closed = {}
+    queue.add [start]
+    while node = queue.next do
+      return node if goal == node
+      unless closed.has_key? node
+        closed[node] = true
+        queue.add graph.neighbours node
+      end
+    end
+  end
   class << self
     include AI::AStar
   end

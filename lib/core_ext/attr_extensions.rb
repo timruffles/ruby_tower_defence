@@ -27,7 +27,9 @@ class Module
   def defaults key, value
     iv = "@#{key}"
     define_method key do
-      instance_variable_get(iv) || instance_variable_set(iv,value.is_a?(Proc) ? value.() : value)
+      # use instance_exec as we don't want the self yielded from ins..eval
+      val = value.is_a?(Proc) ? instance_exec(&value) : value
+      instance_variable_get(iv) || instance_variable_set(iv,val)
     end
   end
   method_takes_hash :defaults

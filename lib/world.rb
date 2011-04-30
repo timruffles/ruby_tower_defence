@@ -58,14 +58,21 @@ module Worldly
     @world || World.new
   end
 end
-module Positioned
-  attr_accessor :point
-  delegate :x, :x=, :y, :y=, :to => :point
-  def distance_to positioned
-    Geo.distance point, positioned
+class Point < Struct.new(:x,:y)
+  numeric_attr_accessor :x, :y
+  def to_a
+    [x,y]
   end
-  def point
-    @point ||= Geo::Point.new 0,0
+  def == to
+    to.x == x && to.y == y
   end
 end
-def p x = 0,y = 0; Point.new x,y; end
+module Positioned
+  attr_accessor :point
+  def distance_to positioned
+  end
+  def point
+    @point ||= Point.new(0,0)
+  end
+end
+def p x = 0, y= 0; Point.new(x,y); end

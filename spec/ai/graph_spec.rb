@@ -18,5 +18,13 @@ describe 'node' do
     node = Node.new(:a,1,Node.new(:b,1,Node.new(:c,1)))
     node.to_path.map(&:state).should == [:c, :b, :a]
   end
+  [:state, :cost, :parent].each do |method|
+    it "has accessors for #{method}" do
+      node = Node.new(:foo, :foo, :foo)
+      node.send(method).should == :foo
+      node.send("#{method}=",:bar)
+      node.send(method).should == :bar
+    end
+  end
 end
 
