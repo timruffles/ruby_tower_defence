@@ -1,21 +1,13 @@
 module AreaInterface
-  attr_accessor :x_size, :y_size
+  attr_accessor :x_size, :y_size, :at_coords
+  defaults :at_coords => -> {Hash.new {Set.new}}
   def within_range(from,objects,range)
     objects.select do |positioned|
       distance(from,positioned) <= range
     end
   end
-  def types_in_range positioned, types, range
-    within_range(positioned,population(*types),range) - [positioned]
-  end
-  def actors_by_coords
-    actors.inject({}) do |coords,actor|
-      coords[[actor.x,actor.y]] = actor
-      coords
-    end
-  end
-  def blocked? x,y
-    actors_by_coords[[x,y]].any(:blocking?)
+  def blocked? point
+    at_coords[point].any(:blocking?)
   end
   def right
     x_size

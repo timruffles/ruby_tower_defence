@@ -1,22 +1,36 @@
 require_relative 'core_ext'
 module Publish
   class PublishContext
-    attr_accessor :events
-    def events
-      @events ||= []
+    attr_accessor :messages, :subs
+    defaults :subs => -> { Hash.new {[]} },
+             :messages => -> {[]}
+    def pub event, subject_class, subject, *args
+      messages.push([event,subject_class,subject].concat(args))
+      to_notify = subs[event] + subs[[event,subject_class]] + subs[[event,subject]]
+      to_notify.each do |listener, callback, filter|
+        if !filter || filter == args
+          listener.send callback, event, subject_class, subject, *args
+        end
+      end
     end
-    def event *args
-      events.push(args)
+    def sub event, callback, subject_class = nil, subject = nil, args = nil
+      raise ArgumentError.new "Sub requires: event only, or either subject class or subject" if !event || subject_class && subject
+      location = subject || subject_class ? subs[[event,subject_class || subject]] : subs[event]
+      location.push [self,callback,args]
+    end
+    def unsub event, callback, subject_class = nil, subject = nil, args = nil
+      raise ArgumentError.new "Unsub requires: event only, or either subject class or subject" if !event || subject_class && subject
+      subs[event] + subs[[event,subject || subject_class]].delete_if do |_,_,filter|
+        !filter || filter == args
+      end
     end
   end
   module Publisher
-    def pub event, subject_class, subject, *args
-      publish_context.event([subject_class,subject,event].concat(args))
-    end
     # scoped publish
     def spub event, *args
       pub event,self.class,self,*args
     end
+    delegate :pub, :sub, :to => :publish_context
     class << self
       def included(into)
         into.send :extend, Macros

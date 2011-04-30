@@ -14,6 +14,8 @@ class World
   end
   alias_method_chain :initialize, 'setup'
   def run
+    sub :movement, :update_actor_position
+    register_actor_positions
     until round_over? do
       actors.each(&:tick)
       yield self if block_given?
@@ -22,10 +24,23 @@ class World
       self.tick += 1
     end
   end
+  def register_actor_positions
+     actors.inject(at_coords) {|coords, actor| coords[actor.position].add actor }
+  end
+  def update_actor_position _,_,subject,new_pos,old_pos
+    at_coords[old_pos].delete subject
+    at_coords[new_pos].add subject
+  end
+  def living
+    actors.reject(&:dead?)
+  end
   def population *actor_types
-    actors.reject(&:dead?).select do |actor|
+    living.select do |actor|
       actor_types.any? {|type| actor.class <= type }
     end
+  end
+  def types_in_range positioned, types, range
+    within_range(positioned,population(*types),range) - [positioned]
   end
   def round_over?
     tick > tick_max || population(Player).empty? || population(Enemy).empty?
@@ -39,7 +54,7 @@ module Worldly
   include Publish::Publisher
   delegate :publish_context, :to => :world
   def world
-    @world ||= WorldInstance rescue nil
+    @world = WorldInstance if WorldInstance
     @world || World.new
   end
 end

@@ -1,9 +1,11 @@
 module AStar
   def solve graph, queue, start, goal
     closed = {}
-    while node = graph.next do
+    while node = queue.next do
       return node if goal == node
-      unless close.has_key? node
+      unless closed.has_key? node
+        closed[node] = true
+        queue.add graph.neighbours node
       end
     end
   end
