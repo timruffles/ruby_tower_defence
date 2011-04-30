@@ -9,4 +9,8 @@ class AI::Node < Struct.new(:state, :cost, :parent)
   def == to
     to.state == state
   end
+  alias :eql? :==
+  def hash
+    state.hash
+  end
 end

@@ -1,19 +1,14 @@
 require 'spec_helper'
 shared_examples_for "a graph" do
-  it "initialises from a hash of vertexs and edges" do
-    distances = {:b => 2,:c => 3,:d => 4}
-    instance = graph_type.new({:a => distances})
-    instance.get(:a).should == distances
-  end
   it "provides nodes around a vertex" do
-    graph.accessible(example_node).should respond_to :each_pair
+    graph.neighbours(example_node).should respond_to :each_pair
   end
   it "provides all nodes" do
     graph.nodes.should respond_to :each_pair
   end
 end
-describe 'node' do
-  include AI
+include AI
+describe Node do
   it "can return a one-dim list representing path to intitial node" do
     node = Node.new(:a,1,Node.new(:b,1,Node.new(:c,1)))
     node.to_path.map(&:state).should == [:c, :b, :a]
@@ -25,6 +20,12 @@ describe 'node' do
       node.send("#{method}=",:bar)
       node.send(method).should == :bar
     end
+  end
+  it "is equal to nodes with identical states" do
+    Node.new(:foo).should == Node.new(:foo)
+  end
+  it "is not equal to nodes with different states" do
+    Node.new(:foo).should_not == Node.new(:bar)
   end
 end
 

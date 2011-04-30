@@ -2,7 +2,7 @@ require_relative 'core_ext'
 module Publish
   class PublishContext
     attr_accessor :messages, :subs
-    defaults :subs => -> { Hash.new {[]} },
+    defaults :subs => -> { Hash.new {|hash,key| hash[key] = []} },
              :messages => -> {[]}
     def pub event, subject_class, subject, *args
       messages.push([event,subject_class,subject].concat(args))

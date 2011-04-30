@@ -1,5 +1,5 @@
 module AI::AStar
-  # deliberately broken exactly how it's done in AIMA - demonstrates the
+  # deliberately broken down exactly how it's done in AIMA - demonstrates the
   # generic components that make up the astar alogrithm
   # http://aima.cs.berkeley.edu/python/search.html
   def solve graph, start, goal
@@ -12,12 +12,12 @@ module AI::AStar
     graph_search graph, queue, start, goal
   end
   def graph_search graph, queue, start, goal
-    closed = {}
+    closed = Set.new
     queue.add [start]
     while node = queue.next do
       return node if goal == node
-      unless closed.has_key? node
-        closed[node] = true
+      unless closed.member? node.state
+        closed.add node.state
         queue.add graph.neighbours node
       end
     end

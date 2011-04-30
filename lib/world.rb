@@ -58,13 +58,24 @@ module Worldly
     @world || World.new
   end
 end
-class Point < Struct.new(:x,:y)
+class Point
   numeric_attr_accessor :x, :y
+  def initialize x = 0, y = 0
+    @x = x
+    @y = y
+  end
   def to_a
     [x,y]
   end
   def == to
     to.x == x && to.y == y
+  end
+  alias :eql? :==
+  def hash
+    "#{x},#{y}".hash
+  end
+  def to_s
+    "Point(#{x},#{y})"
   end
 end
 module Positioned

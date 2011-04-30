@@ -11,7 +11,7 @@ class SortedQueue
   def next
     @queue.shift
   end
-  
+  delegate :length, :to => :@queue
   private
   
   def sort

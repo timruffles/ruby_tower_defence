@@ -1,7 +1,7 @@
 module AreaInterface
   numeric_attr_accessor :x_size, :y_size
   attr_accessor :at_coords
-  defaults :at_coords => -> {Hash.new {Set.new}}
+  defaults :at_coords => -> {Hash.new {|hash,key| hash[key] = Set.new}}
   def within_range(from,objects,range)
     objects.select do |positioned|
       distance(from,positioned) <= range
@@ -36,5 +36,4 @@ class Area
   include AreaInterface
   def tick
   end
-  
 end

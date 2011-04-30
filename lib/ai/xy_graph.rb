@@ -13,7 +13,7 @@ class AI::XYGraph
     end
   end
   def heuristic node, goal_node
-    Math.abs(node.state.x - goal_node.state.x) + Math.abs(node.state.y - goal_node.state.y)
+    (node.state.x - goal_node.state.x).abs + (node.state.y - goal_node.state.y).abs
   end
   def find_path from, to
     AStar.solve self, Node.new(from,0), Node.new(to,0)
