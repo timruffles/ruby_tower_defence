@@ -75,7 +75,6 @@ class World
 end
 # gives instance access to world, via top level WorldInstance const, or a null world
 module Worldly
-  include Publish::Publisher
   delegate :publish_context, :to => :world
   def world
     @world = WorldInstance if WorldInstance

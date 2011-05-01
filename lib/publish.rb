@@ -53,15 +53,23 @@ module Publish
     public
     class << self
       def included(into)
-        into.send :extend, Macros
+        into.instance_exec do
+          extend Macros
+          include ActiveSupport::Callbacks
+          define_callbacks :initialize
+          define_method :enable_attr_writer_evented do
+             @attr_writer_evented_enabled = true
+          end
+          set_callback :initialize, :after, :enable_attr_writer_evented
+        end
       end
     end
     module Macros
       def attr_writer_evented *symbs
         symbs.each do |sym|
-          define_method "#{sym}_with_publish=" do |val,&block|
-            pub self, :change, sym, val
-            self.send "#{sym}_without_publish=", val, &block
+          define_method :"#{sym}_with_publish=" do |val,&block|
+            spub :change, sym, val if @attr_writer_evented_enabled
+            self.send :"#{sym}_without_publish=", val, &block
           end
           attr_writer sym unless instance_methods.include?("sym=".to_sym)
           alias_method_chain "#{sym}=", 'publish'

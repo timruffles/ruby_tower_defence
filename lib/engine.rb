@@ -2,6 +2,8 @@ require 'bundler'
 Bundler.setup
 require 'active_support/core_ext/module'
 require 'active_support/core_ext/class'
+
+require 'active_support/callbacks'
 Bundler.require :always_require
 
 require 'pp'
