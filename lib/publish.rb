@@ -13,24 +13,33 @@ module Publish
         end
       end
     end
-    def sub event, callback, subject_class = nil, subject = nil, args = nil
-      raise ArgumentError.new "Sub requires: event only, or either subject class or subject" if !event || subject_class && subject
-      location = subject || subject_class ? subs[[event,subject_class || subject]] : subs[event]
-      location.push [self,callback,args]
-    end
-    def unsub event, callback, subject_class = nil, subject = nil, args = nil
-      raise ArgumentError.new "Unsub requires: event only, or either subject class or subject" if !event || subject_class && subject
-      subs[event] + subs[[event,subject || subject_class]].delete_if do |_,_,filter|
-        !filter || filter == args
-      end
-    end
   end
   module Publisher
     # scoped publish
     def spub event, *args
       pub event,self.class,self,*args
     end
-    delegate :pub, :sub, :to => :publish_context
+    delegate :pub, :subs, :to => :publish_context
+    def sub event, callback, subject_class = nil, subject = nil, args = nil
+      test_args subject, subject_class
+      location(event,subject_class,subject).push [self,callback,args]
+    end
+    def unsub event, callback, subject_class = nil, subject = nil, args = nil
+      test_args subject, subject_class
+      subs[event] + subs[[event,subject || subject_class]].delete_if do |_,_,filter|
+        !filter || filter == args
+      end
+    end
+    private
+    def location event, subject_class, subject
+      subject_class || subject ? subs[[event,subject_class || subject]] : subs[event]
+    end
+    def test_args subject_class, subject
+      if subject_class && subject
+        raise ArgumentError.new "Sub requires: event only, or either subject class or subject"
+      end
+    end
+    public
     class << self
       def included(into)
         into.send :extend, Macros

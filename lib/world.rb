@@ -15,7 +15,7 @@ class World
   end
   alias_method_chain :initialize, 'setup'
   def run
-    sub :movement, :update_actor_position
+    sub :moved, :update_actor_position
     register_actor_positions
     until round_over? do
       actors.each(&:tick)

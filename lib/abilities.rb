@@ -81,8 +81,8 @@ class Movement < Ability
       @path = world.find_path actor.point, towards
     end
     next_move = @path.pop
-    old_x, old_y = actor.point.to_a
+    old = actor.point
     actor.point = next_move
-    spub :moved, actor.x, actor.y, old_x, old_y unless next_move == @towards
+    spub :moved, actor.point, old unless next_move == @towards
   end
 end
