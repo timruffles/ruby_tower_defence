@@ -28,7 +28,6 @@ class Actor
   end
   def hps_with_death= val
     self.dead = true if val <= 0
-    puts "#{self} hps set to: dead #{dead?}"
     self.hps_without_death = val
   end
   alias_method_chain :hps=, 'death'

@@ -6,7 +6,7 @@ class World
   defaults :tick_pause_secs => 1,
            :tick_max => 1000,
            :publish_context => -> { Publish::PublishContext.new },
-           :actors => []
+           :actors => -> { [] }
   delegate AreaInterface, :to => :area
   def initialize_with_setup opts = {}
     initialize_without_setup opts
@@ -47,7 +47,13 @@ class World
     within_range(positioned,population(*types),range) - [positioned]
   end
   def round_over?
-    tick > tick_max || population(Player).empty? || population(Enemy).empty?
+    timeout = tick > tick_max
+    lost = population(Player).empty?
+    won = population(Enemy).empty?
+    spub :won if won
+    spub :lost if lost
+    spub :timeout if timeout
+    timeout || lost || won
   end
   def universalise
     Kernel.const_set('WorldInstance',self)
@@ -64,7 +70,7 @@ class World
     }
   end
 end
-# gives instance access to world, via top level WorldInstance const, or a personal world
+# gives instance access to world, via top level WorldInstance const, or a null world
 module Worldly
   include Publish::Publisher
   delegate :publish_context, :to => :world
