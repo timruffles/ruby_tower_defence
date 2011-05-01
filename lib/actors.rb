@@ -3,7 +3,7 @@ class Actor
   include Positioned
   include Worldly
   include Publish::Publisher
-
+  include HasIdentity
   attr_accessor :name
   attr_reader :dead
   numeric_attr_accessor :hps
@@ -47,8 +47,11 @@ class Actor
   def invoke ability, on
     abilities[ability].invoke on
   end
-  def to_s
-    name || "UnamedActor<#{self.class}>"
+  def name
+    @name ||= "Unknown #{self.class}"
+  end
+  def to_hash
+    attribute_hash(:hps, :dead, :x, :y, :id, :name).merge :type => self.class
   end
 end
 class Player < Actor

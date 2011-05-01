@@ -2,7 +2,7 @@ require 'bundler'
 Bundler.setup
 require 'active_support/core_ext/module'
 require 'active_support/core_ext/class'
-require 'geometry'
+Bundler.require :always_require
 
 require 'pp'
 require 'json'
@@ -10,6 +10,8 @@ require 'json'
 require_relative 'core_ext'
 require_relative 'hash_initializer'
 require_relative 'sorted_queue'
+require_relative 'has_identity'
+
 
 require_relative 'publish'
 require_relative 'area'

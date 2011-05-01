@@ -13,6 +13,12 @@ module Publish
         end
       end
     end
+    def messages_for_client
+      messages.map do |message|
+        event, subject_class, subject, *args = message
+        [event.to_s, subject_class.to_s, subject.respond_to?(:id) ? subject.id : nil, args]
+      end
+    end
   end
   module Publisher
     # scoped publish

@@ -1,4 +1,3 @@
-Geo = Geometry
 class World
   include HashInitializer
   include Publish::Publisher
@@ -15,9 +14,12 @@ class World
   end
   alias_method_chain :initialize, 'setup'
   def run
-    spub :setup, to_hash
-    sub :moved, :update_actor_position
+    # send initial setup
     register_actor_positions
+    spub :setup, to_hash
+    
+    sub :moved, :update_actor_position
+    
     until round_over? do
       actors.each(&:tick)
       yield self if block_given?
@@ -50,6 +52,17 @@ class World
   def universalise
     Kernel.const_set('WorldInstance',self)
   end
+  def to_hash
+    {
+      :actors => actors.inject({}) {|h,act| h[act.id] = act.to_hash; h },
+      :area => area.to_hash,
+      :at_coords => at_coords.inject({}) do |h,locs|
+        point, here = locs
+        h[point] = here.map(&:id)
+        h
+      end
+    }
+  end
 end
 # gives instance access to world, via top level WorldInstance const, or a personal world
 module Worldly
@@ -74,10 +87,10 @@ class Point
   end
   alias :eql? :==
   def hash
-    "#{x},#{y}".hash
+    to_s.hash
   end
   def to_s
-    "Point(#{x},#{y})"
+    "#{x},#{y}"
   end
 end
 module Positioned

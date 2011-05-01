@@ -1,4 +1,9 @@
 # extensions to save time configuring a class' instance vars
+class Object
+  def attribute_hash *args
+    args.inject({}) {|h,k| h[k] = self.send(k); h}
+  end
+end
 class Module
   def numeric_attr_accessor *symbs
     symbs.each do |sym|
