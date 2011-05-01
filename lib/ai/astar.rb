@@ -12,7 +12,6 @@ module AI::AStar
     graph_search graph, queue, start, goal
   end
   def graph_search graph, queue, start, goal
-    pp "searching for path from #{start.state} to #{goal.state}"
     closed = Set.new
     queue.add [start]
     while node = queue.next do
@@ -22,7 +21,6 @@ module AI::AStar
         queue.add graph.neighbours node
       end
     end
-    pp "tried #{closed.to_a}"
   end
   class << self
     include AI::AStar
