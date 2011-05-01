@@ -26,11 +26,12 @@ module AreaInterface
   def bottom
     0
   end
+  def find_path; end
 end
 class Area
   attr_accessor :world, :actors_to_spawn, :chunk_size, :spawn_rate_ticks, :last_spawn, :target_population
   defaults :last_spawn => 0,
-           :graph => -> { XYGraph.new self }
+           :graph => -> { AI::XYGraph.new self }
   delegate :find_path, :to => :graph
   include HashInitializer
   include AreaInterface

@@ -1,6 +1,7 @@
 Geo = Geometry
 class World
   include HashInitializer
+  include Publish::Publisher
   attr_accessor :actors, :tick, :tick_pause_secs, :tick_max, :publish_context, :area
   numeric_attr_accessor :tick
   defaults :tick_pause_secs => 1,
@@ -25,7 +26,7 @@ class World
     end
   end
   def register_actor_positions
-     actors.inject(at_coords) {|coords, actor| coords[actor.position].add actor }
+     actors.each {|actor| at_coords[actor.point].add actor }
   end
   def update_actor_position _,_,subject,new_pos,old_pos
     at_coords[old_pos].delete subject
@@ -80,7 +81,9 @@ class Point
 end
 module Positioned
   attr_accessor :point
+  delegate :x, :x=, :y, :y=, :to => :point
   def distance_to positioned
+    (x - positioned.x).abs + (y - positioned.y).abs
   end
   def point
     @point ||= Point.new(0,0)

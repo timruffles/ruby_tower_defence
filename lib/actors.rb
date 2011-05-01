@@ -54,7 +54,7 @@ end
 class Player < Actor
   defaults :hps => 15
   def ai
-    @ai ||= PlayerAI.new self
+    @ai ||= AI::Player.new self
   end
   def abilities
     self.abilities = [Ranged.new(:range => 3, :damage => 3)] unless @abilities
@@ -66,7 +66,7 @@ end
 class Zombie < Enemy
   defaults :hps => 9
   def ai
-    @ai ||= ZombieAI.new self
+    @ai ||= AI::Zombie.new self
   end
   def abilities
     self.abilities = [Melee.new(:range => 1, :damage => 3), Movement.new(:speed => 1)] unless @abilities

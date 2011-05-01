@@ -7,10 +7,11 @@ class AI::Zombie < AI::Base
   def approach_kill target
     # TODO need to query classes of attack for range
     # eg - can i use any ability to hurt them at this range?
+    pp "#{self} am #{actor.distance_to(current_target)} from #{current_target}"
     if actor.distance_to(current_target) <= 1
       attack current_target
     else
-      actor.invoke :movement, current_target
+      actor.invoke :movement, current_target.point
     end
   end
   def favoured_target

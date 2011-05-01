@@ -76,16 +76,13 @@ end
 class Movement < Ability
   numeric_attr_accessor :speed
   def invoke towards
-    x_change = y_change = 0
-    if (towards.x - actor.x).abs == 1
-      # we're able to get in front
-      y_change = (actor.y < towards.y ? 1 : -1)
-    else
-      x_change = (actor.x < towards.x ? 1 : -1) * speed
+    if @towards != towards
+      @towards = towards
+      @path = world.find_path actor.point, towards
     end
-    old_x, old_y = actor.x, actor.y
-    actor.x += x_change
-    actor.y += y_change
-    spub :moved, actor.x, actor.y, old_x, old_y
+    next_move = @path.pop
+    old_x, old_y = actor.point.to_a
+    actor.point = next_move
+    spub :moved, actor.x, actor.y, old_x, old_y unless next_move == @towards
   end
 end
