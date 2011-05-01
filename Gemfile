@@ -3,7 +3,7 @@ gem 'activesupport'
 gem 'i18n'
 
 group :always_require do
-  gem 'ruby-geometry'
+  gem 'uuid'
 end
 
 group :test do
