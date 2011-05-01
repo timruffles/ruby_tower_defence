@@ -11,9 +11,14 @@ group :test do
   gem 'mocha'
 end
 
-group :server do
+group :client do
   gem 'sinatra'
   gem 'haml'
   gem 'coffee-script'
+  gem 'json'
+end
+
+group :server do
+  gem 'sinatra'
   gem 'json'
 end
