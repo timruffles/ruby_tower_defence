@@ -13,6 +13,11 @@ module Publish
         end
       end
     end
+    def pluck_messages
+      msgs = messages_for_client
+      self.messages = []
+      msgs
+    end
     def messages_for_client
       messages.map do |message|
         event, subject_class, subject, *args = message

@@ -19,7 +19,8 @@ require_relative 'area'
 require_relative 'world'
 require_relative 'actors'
 require_relative 'abilities'
-require_relative 'views/ascii'
+require_relative 'runner/test'
+
 
 require_relative 'ai'
 require_relative 'ai/base'

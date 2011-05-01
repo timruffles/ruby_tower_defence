@@ -19,10 +19,8 @@ module Views
         end
         puts "|#{row.join(' ')}|\n"
       end
-      @last_events ||= 0
-      msgs = world.publish_context.messages.slice(@last_events..-1)
+      msgs = world.publish_context.messages
       pp JSON.load(msgs.to_json)
-      @last_events = world.publish_context.messages.length
     end
   end
 end

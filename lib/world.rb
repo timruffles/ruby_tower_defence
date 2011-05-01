@@ -3,9 +3,9 @@ class World
   include Publish::Publisher
   attr_accessor :actors, :tick, :tick_pause_secs, :tick_max, :publish_context, :area
   numeric_attr_accessor :tick
-  defaults :tick_pause_secs => 1,
-           :tick_max => 1000,
+  defaults :tick_max => 1000,
            :publish_context => -> { Publish::PublishContext.new },
+           :tick_messages => -> { [] },
            :actors => -> { [] }
   delegate AreaInterface, :to => :area
   def initialize_with_setup opts = {}
@@ -21,9 +21,9 @@ class World
     sub :moved, :update_actor_position
     
     until round_over? do
+      tick_messages << publish_context.pluck_messages
       actors.each(&:tick)
       yield self if block_given?
-      sleep tick_pause_secs if tick_pause_secs > 0
       area.tick
       self.tick += 1
     end
@@ -68,6 +68,9 @@ class World
         h
       end
     }
+  end
+  def messages_for_client
+    tick_messages
   end
 end
 # gives instance access to world, via top level WorldInstance const, or a null world
