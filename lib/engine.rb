@@ -5,6 +5,7 @@ require 'active_support/core_ext/class'
 require 'geometry'
 
 require 'pp'
+require 'json'
 
 require_relative 'core_ext'
 require_relative 'hash_initializer'

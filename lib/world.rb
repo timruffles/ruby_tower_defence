@@ -15,6 +15,7 @@ class World
   end
   alias_method_chain :initialize, 'setup'
   def run
+    spub :setup, to_hash
     sub :moved, :update_actor_position
     register_actor_positions
     until round_over? do

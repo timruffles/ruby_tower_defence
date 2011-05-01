@@ -4,3 +4,4 @@ require_relative '../lib/engine'
 RSpec.configure do |config|
   config.mock_framework = :mocha
 end
+require_relative 'support/factory'
