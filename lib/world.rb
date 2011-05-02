@@ -14,6 +14,7 @@ class World
     area.world = self
     sub :moved, :update_actor_position
     register_actor_positions
+    Stats.new self
     spub :setup, to_h
   end
   alias_method_chain :initialize, 'setup'
@@ -31,7 +32,7 @@ class World
   def register_actor_positions
      actors.each {|actor| at_coords[actor.point].add actor }
   end
-  def update_actor_position _,_,subject,new_pos,old_pos
+  def update_actor_position _,subject,new_pos,old_pos
     at_coords[old_pos].delete subject
     at_coords[new_pos].add subject
   end
@@ -50,6 +51,7 @@ class World
     timeout = tick > tick_max
     lost = population(Player).empty?
     won = population(Enemy).empty?
+    spub :before_end if timeout || lost || won
     spub :won if won
     spub :lost if lost
     spub :timeout if timeout
@@ -57,6 +59,10 @@ class World
   end
   def universalise
     Kernel.const_set('WorldInstance',self)
+  end
+  def add_actor actor
+    spub :add_actor, actor.to_h
+    actors << actor
   end
 end
 # gives instance access to world, via top level WorldInstance const, or a null world

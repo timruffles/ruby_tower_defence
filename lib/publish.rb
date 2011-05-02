@@ -8,8 +8,8 @@ module Publish
       messages.push([event,subject_class,subject].concat(args))
       to_notify = subs[event] + subs[[event,subject_class]] + subs[[event,subject]]
       to_notify.each do |listener, callback, filter|
-        if !filter || filter == args
-          listener.send callback, event, subject_class, subject, *args
+        if !filter || filter.zip(args).all? {|a,b| a.nil? || a == b}
+          listener.send callback, subject_class, subject, *args
         end
       end
     end
@@ -25,24 +25,18 @@ module Publish
       pub event,self.class,self,*args
     end
     delegate :pub, :subs, :to => :publish_context
-    def sub event, callback, subject_class = nil, subject = nil, args = nil
-      test_args subject, subject_class
-      location(event,subject_class,subject).push [self,callback,args]
+    # filter args - matches on == or nil, so [nil,nil,10] matches [:foo, :bar, 10]
+    def sub event, callback, subject_or_class = nil, args = nil
+      location(event,subject_or_class).push [self,callback,args]
     end
-    def unsub event, callback, subject_class = nil, subject = nil, args = nil
-      test_args subject, subject_class
-      subs[event] + subs[[event,subject || subject_class]].delete_if do |_,_,filter|
-        !filter || filter == args
+    def unsub event, callback, subject_or_class = nil, args = nil
+      subs[event] + subs[[event,subject_or_class]].delete_if do |_,_,filter|
+        !filter || filter.zip(args).all? {|a,b| a.nil? || a == b}
       end
     end
     private
-    def location event, subject_class, subject
-      subject_class || subject ? subs[[event,subject_class || subject]] : subs[event]
-    end
-    def test_args subject_class, subject
-      if subject_class && subject
-        raise ArgumentError.new "Sub requires: event only, or either subject class or subject"
-      end
+    def location event, subject_or_class = nil
+      subject_or_class ? subs[[event,subject_or_class]] : subs[event]
     end
   end
   module AttrWriterEvented
@@ -67,7 +61,8 @@ module Publish
     def attr_writer_evented *symbs
       symbs.each do |sym|
         define_method :"#{sym}_with_publish=" do |val,&block|
-          spub :change, sym, val if @attr_writer_evented_enabled
+          current = self.send(sym)
+          spub :change, sym, val, current if @attr_writer_evented_enabled
           self.send :"#{sym}_without_publish=", val, &block
         end
         attr_writer sym unless instance_methods.include?("sym=".to_sym)

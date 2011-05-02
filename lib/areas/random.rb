@@ -9,7 +9,7 @@ module Areas
     end
     def spawn num
       (0..num).each do |y|
-        world.actors << Zombie.new(:x => world.right, :y => y)
+        world.add_actor Zombie.new(:x => world.right, :y => y)
       end
       self.actors_to_spawn -= num
     end
