@@ -1,7 +1,7 @@
 @World = BB.View.extend
   initialize: (opts) ->
     _.extend(this,opts)
-    for event in ['moved','change','ranged','melee']
+    for event in ['moved','change','ranged','melee','add_actor','stats','lost']
        dojo.sub event, this, "on_#{event}"
     dojo.sub 'tickStart', this, 'render'
     null
@@ -21,6 +21,8 @@
     for id, actor of @actors
       @cells[actor.point].setAttribute('class',actor.type)
     null
+  on_add_actor: (type,actor,newActor) ->
+    @actors[newActor.id] = newActor
   on_moved: (type,actor,newPos,oldPos) ->
     actor.point = newPos
   on_change: (type,actor,attribute,newVal) ->
@@ -34,3 +36,8 @@
     @cells[actor.point].setAttribute('class',"#{actor.type}_melee")
     if @actors[victimId]
       @cells[@actors[victimId].point].appendChild($("<div class='change negative'>#{dmg}</div>")[0])
+    null
+  on_stats: (type, actor, stats) ->
+    @stats = stats
+  on_lost: ->
+    alert("You fought hard, firing #{@stats.shots}, killing #{@stats.zombies_killed} and losing #{@stats.player_hps_lost}hps before you perished.")
