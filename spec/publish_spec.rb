@@ -5,10 +5,14 @@ describe "pubsub" do
       include Publish::Publisher
       attr_writer_evented :foo
       attr_reader :foo
+      def initialize
+        run_callbacks :initialize do
+        end
+      end
     end
   }
   let (:instance) { test.new }
-  describe "attr_accessor_evented" do
+  describe "#attr_writer_evented" do
     it "defines a working writer" do
       instance.stubs(:pub)
       instance.foo = 'bar'

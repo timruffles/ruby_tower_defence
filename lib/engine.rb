@@ -21,6 +21,7 @@ require_relative 'area'
 require_relative 'world'
 require_relative 'actors'
 require_relative 'abilities'
+require_relative 'api'
 require_relative 'runner/test'
 
 

@@ -1,7 +1,9 @@
 module HashInitializer
   def initialize opts = {}
-    opts.each do |key,val|
-      self.send "#{key}=",val
+    run_callbacks :initialize do
+      opts.each do |key,val|
+        self.send "#{key}=",val
+      end
     end
   end
 end

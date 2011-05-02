@@ -49,9 +49,6 @@ class Actor
   def name
     @name ||= "Unknown #{self.class}"
   end
-  def to_hash
-    attribute_hash(:hps, :dead, :x, :y, :id, :name).merge :type => self.class
-  end
 end
 class Player < Actor
   defaults :hps => 15

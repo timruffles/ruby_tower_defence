@@ -10,16 +10,14 @@ class World
   delegate AreaInterface, :to => :area
   def initialize_with_setup opts = {}
     initialize_without_setup opts
+    universalise
     area.world = self
+    sub :moved, :update_actor_position
+    register_actor_positions
+    spub :setup, to_h
   end
   alias_method_chain :initialize, 'setup'
   def run
-    # send initial setup
-    register_actor_positions
-    spub :setup, to_hash
-    
-    sub :moved, :update_actor_position
-    
     until round_over? do
       tick_messages << publish_context.pluck_messages
       actors.each(&:tick)
@@ -57,20 +55,6 @@ class World
   end
   def universalise
     Kernel.const_set('WorldInstance',self)
-  end
-  def to_hash
-    {
-      :actors => actors.inject({}) {|h,act| h[act.id] = act.to_hash; h },
-      :area => area.to_hash,
-      :at_coords => at_coords.inject({}) do |h,locs|
-        point, here = locs
-        h[point] = here.map(&:id)
-        h
-      end
-    }
-  end
-  def messages_for_client
-    tick_messages
   end
 end
 # gives instance access to world, via top level WorldInstance const, or a null world

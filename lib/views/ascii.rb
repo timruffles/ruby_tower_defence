@@ -20,7 +20,7 @@ module Views
         puts "|#{row.join(' ')}|\n"
       end
       msgs = world.publish_context.messages
-      pp JSON.load(msgs.to_json)
+      pp msgs.to_json
     end
   end
 end

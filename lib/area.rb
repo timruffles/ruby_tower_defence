@@ -37,10 +37,4 @@ class Area
   include AreaInterface
   def tick
   end
-  def to_hash
-    {
-      :x_size => x_size,
-      :y_size => y_size
-    }
-  end
 end
