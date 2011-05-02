@@ -1,18 +1,16 @@
-World = BB.View.extend
+@World = BB.View.extend
   initialize: (opts) ->
-    d.sub 'tick', this, 'tick'
-    @actors = opts.actors
-    @x_size = 10
-    @y_size = 7
-    this.render()
+    _.extend(this,opts)
+    # for event in ['moved','ranged','melee','change']
+    #   dojo.sub event, this, "on#{event.ucfirst}"
   render: ->
     this.$().empty()
     unless @world_rendered
       @cells = {}
-      for y in [0..@y_size]
+      for y in [0..@ySize]
         row = doc.createElement('tr')
         this.el.appendChild(row)
-        for x in [0..@x_size]
+        for x in [0..@xSize]
           row.appendChild(cell = doc.createElement('td'))
           @cells["#{x},#{y}"] = cell
       @world_rendered = true
@@ -21,22 +19,4 @@ World = BB.View.extend
     for id, actor of @actors
       @cells["#{actor.x},#{actor.y}"].setAttribute('class',actor.type)
     null
-  on_movement: (events) ->
-    when 'Move'
-      actor = @actors[event.aid]
-      @cells["#{actor.x},#{actor.y}"].setAttribute('class','')
-      actor.x = event.x
-      actor.y = event.y
-      @cells["#{actor.x},#{actor.y}"].setAttribute('class',actor.type)
-    when 'AttributeChange'
-      for attribute, value in event.attributes
-        actor.set attribute, value
-  tick:
-    this.render()
-    null
-@World = World
-
-    
-      
-      
-  
+  onMoved: (type,actor,newPos,oldPos) ->
