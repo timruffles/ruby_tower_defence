@@ -1,12 +1,11 @@
-$.get('http://localhost:4568/games/1',
+$.getJSON('http://localhost:4568/games/1?callback=?',
   ((ticks) ->
-    setup = ticks.shift()[0][3][0]
+    setup = ticks[0].shift()[3]
     console.log(setup)
     world = new World _.extend({el:$('#world')[0]},setup)
     feed = new Feed {el:$('#feed')[0]}
     dispatcher = new Dispatcher(ticks,setup.actors)
-  ),
-  'jsonp')
+  ))
 
 
   

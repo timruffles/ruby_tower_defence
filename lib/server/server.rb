@@ -8,5 +8,6 @@ require_relative '../engine'
 
 get '/games/:id' do |id|
   messages = Runner::Test.run
-  "#{params[:callback]}(#{messages.to_json});"
+  content_type "text/javascript"
+  "#{params[:callback]}(#{messages});"
 end

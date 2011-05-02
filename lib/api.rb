@@ -18,7 +18,7 @@ end
 class Actor
   # used when entire actor data is important
   def to_h
-    attribute_hash(:hps, :dead, :x, :y, :id, :name).merge(:type => self.class)
+    attribute_hash(:hps, :dead, :point, :id, :name).merge(:type => self.class)
   end
   # used implicitly, to give a reference to the actors hash
   def to_json *a
