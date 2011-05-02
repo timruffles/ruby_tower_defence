@@ -1,9 +1,40 @@
 #world
-  td
-    width: 65px
-  tr
+  ul
+    clear: both
+    overflow: auto
+  li
+    display: block
+    float: left
+    width: 75px
     height: 65px
+    position: relative
+  .Player, .Zombie
+    background-repeat: no-repeat
+    -webkit-transition: background-color 0.2s
   .Player
-    background: url('../img/small_gun_pose.gif') no-repeat
+    background-image: url('../img/small_gun_pose.gif')
+    &.ranged
+      -webkit-animation-name: shot
+      -webkit-animation-duration: .5s
+      -webkit-animation-iteration-count: infinite
   .Zombie
-    background: url('../img/zombie_topdown.png') no-repeat
+    background-image: url('../img/zombie_topdown.png')
+
+@-webkit-keyframes shot
+  0%
+    background-color: #fff
+  25%
+    background-color: #f00
+  50%
+    background-color: #fff
+
+.change
+  width: 1.5em
+  height: 1.5em
+  border-radius: 0.75em
+  position: absolute
+  top: -.25em
+  right: -.25em
+  &.negative
+    background: red
+    color: white
