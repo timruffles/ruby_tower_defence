@@ -11,9 +11,6 @@ class World
       end
     }
   end
-  def to_json *a
-    to_h.to_json *a
-  end
   def messages_for_client
     tick_messages.to_json
   end

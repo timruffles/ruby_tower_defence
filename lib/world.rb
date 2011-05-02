@@ -18,12 +18,14 @@ class World
   end
   alias_method_chain :initialize, 'setup'
   def run
-    until round_over? do
-      tick_messages << publish_context.pluck_messages
+    stop_loop = false
+    until stop_loop
       actors.each(&:tick)
       yield self if block_given?
       area.tick
       self.tick += 1
+      stop_loop = round_over?
+      tick_messages << publish_context.pluck_messages
     end
   end
   def register_actor_positions
