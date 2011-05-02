@@ -3,6 +3,7 @@ class Actor
   include Positioned
   include Worldly
   include Publish::Publisher
+  include Publish::AttrWriterEvented
   include HasIdentity
   attr_accessor :name
   attr_reader :dead
